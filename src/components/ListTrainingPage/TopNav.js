@@ -1,18 +1,17 @@
 import React from 'react'
-import { Image, Navbar } from 'react-bootstrap'
+import { Col, Image, Navbar, Row } from 'react-bootstrap'
 import Filters from './Filters'
+import { Button } from 'antd'
 
-const TopNav = () => {
+const TopNav = ({ setPage }) => {
   return (
     <Navbar sticky='top'>
       <Navbar.Brand>
-        <Image src='https://amatoscar.pt/assets/media/general/logoamatoscar.webp' width={100} />
+        <h3 style={{ color: '#ed6337' }}>Formações</h3>
       </Navbar.Brand>
 
-      <h3 className='me-4' style={{ color: '#ed6337' }}>Formações</h3>
-
-      <div style={{width: '100%'}}>
-        <Filters />
+      <div style={{ width: '100%' }}>
+        <Filters setPage={setPage} />
       </div>
     </Navbar>
   )

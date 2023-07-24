@@ -2,7 +2,7 @@ import React, { Fragment } from 'react'
 import CustomTable from '../components/ListTrainingPage/CustomTable';
 import TopNav from '../components/ListTrainingPage/TopNav';
 
-const ListTrainingPage = () => {
+const ListTrainingPage = ({ setPage }) => {
   // Sample data
   const data = [
     { data: '2020-08-06', portal: 'A MatosCar', plataforma: 'Requisiçoes Internas', titulo: 'Video Formação', dataLimite: null, realizada: false },
@@ -14,7 +14,7 @@ const ListTrainingPage = () => {
 
   return (
     <Fragment>
-      <TopNav />
+      <TopNav setPage={setPage} />
       <CustomTable data={data} />
     </Fragment>
   )
