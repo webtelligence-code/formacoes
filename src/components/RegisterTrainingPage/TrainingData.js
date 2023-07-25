@@ -6,6 +6,7 @@ import chalk from 'chalk';
 import React, { Fragment, useCallback, useEffect, useState } from 'react'
 import { Row, Col } from 'react-bootstrap'
 import Moment from 'react-moment';
+import moment from 'moment';
 import Select from 'react-select'
 
 const TrainingData = ({ 
@@ -31,11 +32,11 @@ const TrainingData = ({
     switch (type) {
       case 'date':
         setSelectedDate(value);
-        console.log('Date String ->', stringValue);
+        console.log('Date ->', value);
         break;
       case 'time':
         setSelectedTime(value);
-        console.log('Time String ->', stringValue);
+        console.log('Time ->', value);
         break;
       default:
         console.log(chalk.red('No matching type parameter.'));
@@ -89,7 +90,7 @@ const TrainingData = ({
               <Col>
                 <div style={{ display: 'flex', flexDirection: 'column', marginBottom: 10 }}>
                   <label style={{ fontWeight: '700' }}>Selecione a data limite</label>
-                  <DatePicker format="DD/MM/YYYY" onChange={(date, dateString) => onChangeDateAndTime('date', date, dateString)} allowClear />
+                  <DatePicker showTime format="DD/MM/YYYY" onChange={(date, dateString) => onChangeDateAndTime('date', date, dateString)} allowClear />
                   {selectedDate && (<p>Selected Date: <Moment format='DD/MM/YYYY'>{selectedDate}</Moment></p>)}
                 </div>
               </Col>
@@ -98,7 +99,7 @@ const TrainingData = ({
                 <div style={{ display: 'flex', flexDirection: 'column', marginBottom: 10 }}>
                   <label style={{ fontWeight: '700' }}>Selecione o horário limite</label>
                   <TimePicker format={'HH:mm'} onChange={(time, timeString) => onChangeDateAndTime('time', time, timeString)} allowClear />
-                  {selectedTime && (<p>Selected Time: <Moment format='HH:mm'>{selectedTime}</Moment></p>)}
+                  {selectedTime && (<p>Selected Time: {moment(selectedTime).format('HH:mm')}</p>)}
                 </div>
               </Col>
             </Row>
