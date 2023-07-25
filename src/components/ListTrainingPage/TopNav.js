@@ -1,17 +1,16 @@
 import React from 'react'
-import { Col, Image, Navbar, Row } from 'react-bootstrap'
+import { Navbar } from 'react-bootstrap'
 import Filters from './Filters'
-import { Button } from 'antd'
 
-const TopNav = ({ setPage }) => {
+const TopNav = ({ title, showFilters, buttonText, setPage }) => {
   return (
     <Navbar sticky='top'>
       <Navbar.Brand>
-        <h3 style={{ color: '#ed6337' }}>Formações</h3>
+        <h3 style={{ color: '#ed6337' }}>{title}</h3>
       </Navbar.Brand>
 
       <div style={{ width: '100%' }}>
-        <Filters setPage={setPage} />
+        <Filters setPage={setPage} showFilters={showFilters} buttonText={buttonText} />
       </div>
     </Navbar>
   )

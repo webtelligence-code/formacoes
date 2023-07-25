@@ -1,10 +1,9 @@
-import { faCheck, faSquareCheck, faSquareXmark, faX } from '@fortawesome/free-solid-svg-icons';
+import { faCheck, faX } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
 import Table from 'react-bootstrap/Table';
 
 const CustomTable = ({ columns, data }) => {
-
 
   return (
     <Table hover className='w-100'>
@@ -21,8 +20,8 @@ const CustomTable = ({ columns, data }) => {
       </thead>
 
       <tbody>
-        {data.map((item) => (
-          <tr>
+        {data.map((item, key) => (
+          <tr key={key}>
             <td>{item.data}</td>
             <td>{item.portal}</td>
             <td>{item.plataforma}</td>

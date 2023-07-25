@@ -14,7 +14,7 @@ const ListTrainingPage = ({ setPage }) => {
 
   return (
     <Fragment>
-      <TopNav setPage={setPage} />
+      <TopNav setPage={setPage} showFilters={true} title={'Formações'} buttonText={'Registar'}/>
       <CustomTable data={data} />
     </Fragment>
   )

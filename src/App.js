@@ -2,16 +2,19 @@ import { Container } from 'react-bootstrap';
 import './App.css';
 import ListTrainingPage from './pages/ListTrainingPage';
 import RegisterTrainingPage from './pages/RegisterTrainingPage';
+import ViewTrainingPage from './pages/ViewTrainingPage';
 import { useState } from 'react';
 
-function App() {
+const API_URL = 'https://amatoscar.pt/GAP/NovasPlataformas/formacoes/api/index.php';
 
-  const [page, setPage] = useState('Home')
+function App() {
+  const [page, setPage] = useState('List')
 
   return (
     <Container>
-      {page === 'Home' && (<ListTrainingPage setPage={setPage} />)}
-      {page === 'Register' && (<RegisterTrainingPage setPage={setPage} />)}
+      {page === 'List' && (<ListTrainingPage setPage={setPage} API_URL={API_URL} />)}
+      {page === 'Register' && (<RegisterTrainingPage setPage={setPage} API_URL={API_URL} />)}
+      {page === 'View' && (<ViewTrainingPage setPage={setPage} API_URL={API_URL} />)}
     </Container>
   );
 }
