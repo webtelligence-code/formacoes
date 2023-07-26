@@ -1,7 +1,7 @@
 {
   "name": "formacoes",
   "version": "0.1.0",
-  "homepage": "/formacoes/",
+  "homepage": "GAP/NovasPlataformas/formacoes/",
   "private": true,
   "dependencies": {
     "@1stquad/react-bootstrap-datetimepicker": "^1.0.25",

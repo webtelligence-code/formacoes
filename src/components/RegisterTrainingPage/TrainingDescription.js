@@ -27,6 +27,7 @@ const TrainingDescription = () => {
         placeholder='Máximo de caracteres é 350'
         maxLength={maxCharacters}
         onChange={handleChange}
+        
       />
 
       {/* Display remaining character count */}
