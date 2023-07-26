@@ -14,6 +14,7 @@ const Filters = ({ setPage, buttonText, showFilters }) => {
           onClick={() => setPage(showFilters ? 'Register' : 'List')}
           icon={<FontAwesomeIcon icon={showFilters ? faPlus : faAngleLeft} />}
           className='h-100'
+          danger={!showFilters}
         >
           {buttonText}
         </Button>

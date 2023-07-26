@@ -1,15 +1,12 @@
 import { faCar, faGraduationCap, faMapLocationDot } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Button, Switch, DatePicker, TimePicker, Input } from 'antd';
-import axios from 'axios';
 import chalk from 'chalk';
-import React, { Fragment, useCallback, useEffect, useState } from 'react'
+import React, { Fragment } from 'react'
 import { Row, Col } from 'react-bootstrap'
-import Moment from 'react-moment';
-import moment from 'moment';
 import Select from 'react-select'
 
-const TrainingData = ({ 
+const TrainingData = ({
   API_URL,
   title,
   setTitle,
@@ -21,9 +18,9 @@ const TrainingData = ({
   setSelectedDate,
   selectedTime,
   setSelectedTime,
-  switchCheked,
-  setSwitchChecked
-}) => {  
+  switchDateCheked,
+  setSwitchDateChecked,
+}) => {
 
   /////////////////////////////////////////////////////////////////////////////////
   // COMPONENT FUNCTIONS
@@ -33,10 +30,12 @@ const TrainingData = ({
       case 'date':
         setSelectedDate(value);
         console.log('Date ->', value);
+        console.log('Date String ->', stringValue);
         break;
       case 'time':
         setSelectedTime(value);
         console.log('Time ->', value);
+        console.log('Time String ->', stringValue);
         break;
       default:
         console.log(chalk.red('No matching type parameter.'));
@@ -44,73 +43,61 @@ const TrainingData = ({
     }
   }
 
-  const handleSubmit = () => {
-    alert(`The title you entered is ${title}`);
-  }
-
   return (
     <Fragment>
-      <Row>
-        <h5 style={{ color: '#ed6337' }}>Dados da formação</h5>
-        <Col>
-          <div style={{ display: 'flex', flexDirection: 'column', marginBottom: 10 }}>
-            <label style={{ fontWeight: '700' }}>Título</label>
-            <Input name='title' value={title} onChange={(e) => setTitle(e.target.value)} required />
-          </div>
+      <h5 style={{ color: '#ed6337', marginBottom: 20 }}>Dados da formação</h5>
 
-          <div style={{ display: 'flex', flexDirection: 'column', marginBottom: 10 }}>
-            <label style={{ fontWeight: '700' }}>Marca</label>
-            <Select
-              onChange={() => { }}
-              placeholder={<label>Selecione a marca<FontAwesomeIcon icon={faCar} className='ms-2' /></label>}
-              name='brand'
-              isClearable
-              options={brands}
-            />
-          </div>
+      <div style={{ display: 'flex', flexDirection: 'column', marginBottom: 10 }}>
+        <label style={{ fontWeight: '700' }}>Título</label>
+        <Input allowClear name='title' value={title} onChange={(e) => setTitle(e.target.value)} required />
+      </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', marginBottom: 10 }}>
-            <label style={{ fontWeight: '700' }}>Localização</label>
-            <Select
-              onChange={() => { }}
-              placeholder={<label>Selecione a localização<FontAwesomeIcon icon={faMapLocationDot} className='ms-2' /></label>}
-              name='location'
-              isClearable
-              options={cities}
-            />
-          </div>
+      <div style={{ display: 'flex', flexDirection: 'column', marginBottom: 10 }}>
+        <label style={{ fontWeight: '700' }}>Marca</label>
+        <Select
+          onChange={() => { }}
+          placeholder={<label>Selecione a marca<FontAwesomeIcon icon={faCar} className='ms-2' /></label>}
+          name='brand'
+          isClearable
+          options={brands}
+        />
+      </div>
 
-          <div style={{ marginBottom: 10 }}>
-            <label style={{ fontWeight: '700' }}>Sem limite de data</label>
-            <Switch className='ms-2' onChange={(checked) => setSwitchChecked(checked)} />
-          </div>
+      <div style={{ display: 'flex', flexDirection: 'column', marginBottom: 10 }}>
+        <label style={{ fontWeight: '700' }}>Localização</label>
+        <Select
+          onChange={() => { }}
+          placeholder={<label>Selecione a localização<FontAwesomeIcon icon={faMapLocationDot} className='ms-2' /></label>}
+          name='location'
+          isClearable
+          options={cities}
+        />
+      </div>
 
-          {!switchCheked && (
-            <Row>
-              <Col>
-                <div style={{ display: 'flex', flexDirection: 'column', marginBottom: 10 }}>
-                  <label style={{ fontWeight: '700' }}>Selecione a data limite</label>
-                  <DatePicker showTime format="DD/MM/YYYY" onChange={(date, dateString) => onChangeDateAndTime('date', date, dateString)} allowClear />
-                  {selectedDate && (<p>Selected Date: <Moment format='DD/MM/YYYY'>{selectedDate}</Moment></p>)}
-                </div>
-              </Col>
+      <div style={{ marginBottom: 10 }}>
+        <label style={{ fontWeight: '700' }}>Sem limite de data</label>
+        <Switch style={{backgroundColor: switchDateCheked ? 'green' : 'red'}} checkedChildren="Sim" unCheckedChildren="Não" className='ms-2' onChange={(checked) => setSwitchDateChecked(checked)} />
+      </div>
 
-              <Col>
-                <div style={{ display: 'flex', flexDirection: 'column', marginBottom: 10 }}>
-                  <label style={{ fontWeight: '700' }}>Selecione o horário limite</label>
-                  <TimePicker format={'HH:mm'} onChange={(time, timeString) => onChangeDateAndTime('time', time, timeString)} allowClear />
-                  {selectedTime && (<p>Selected Time: {moment(selectedTime).format('HH:mm')}</p>)}
-                </div>
-              </Col>
-            </Row>
-          )}
-        </Col>
+      {!switchDateCheked && (
+        <Row>
+          <Col>
+            <div style={{ display: 'flex', flexDirection: 'column', marginBottom: 10 }}>
+              <label style={{ fontWeight: '700' }}>Selecione a data limite</label>
+              <DatePicker showTime format="DD/MM/YYYY" onChange={(date, dateString) => onChangeDateAndTime('date', date, dateString)} allowClear />
+              {selectedDate && (<p>Selected Date: {selectedDate.format('DD/MM/YYYY')}</p>)}
+            </div>
+          </Col>
 
-        <Col>
-
-        </Col>
-      </Row>
-      <Button onClick={handleSubmit} icon={<FontAwesomeIcon icon={faGraduationCap} />}>Registar</Button>
+          <Col>
+            <div style={{ display: 'flex', flexDirection: 'column', marginBottom: 10 }}>
+              <label style={{ fontWeight: '700' }}>Selecione o horário limite</label>
+              <TimePicker format="HH:mm" onChange={(time, timeString) => onChangeDateAndTime('time', time, timeString)} allowClear />
+              {selectedTime && (<p>Selected Time: {selectedTime.format('HH:mm')}</p>)}
+            </div>
+          </Col>
+        </Row>
+      )}
     </Fragment>
   )
 }

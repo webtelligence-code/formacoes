@@ -1,6 +1,6 @@
 import React from 'react'
 import { Navbar } from 'react-bootstrap'
-import Filters from './Filters'
+import Filters from '../ListTrainingPage/Filters'
 
 const TopNav = ({ title, showFilters, buttonText, setPage }) => {
   return (

@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react'
 import CustomTable from '../components/ListTrainingPage/CustomTable';
-import TopNav from '../components/ListTrainingPage/TopNav';
+import TopNav from '../components/utility/TopNav';
 
 const ListTrainingPage = ({ setPage }) => {
   // Sample data

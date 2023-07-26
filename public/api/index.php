@@ -23,8 +23,8 @@ switch ($method) {
             case 'get_all_cities':
                 $response = getAllCities();
                 break;
-            case 'get_users':
-                $response = getUsers();
+            case 'get_all_users':
+                $response = getAllUsers();
                 break;
         }
 
