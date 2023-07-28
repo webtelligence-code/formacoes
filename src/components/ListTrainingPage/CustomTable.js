@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
 import Table from 'react-bootstrap/Table';
 
-const CustomTable = ({ data, handleTrainingClick }) => {
+const CustomTable = ({ trainingsList, handleTrainingClick }) => {
 
   return (
     <Table hover className='w-100'>
@@ -22,15 +22,15 @@ const CustomTable = ({ data, handleTrainingClick }) => {
 
       {/* Table body */}
       <tbody>
-        {data.map((item, key) => (
-          <tr style={{ cursor: 'pointer' }} key={key} onClick={() => handleTrainingClick(item.id)}>
-            <td>{item.data}</td>
-            <td>{item.portal}</td>
-            <td>{item.plataforma}</td>
-            <td>{item.titulo}</td>
-            <td>{item.dataLimite ? item.dataLimite : 'Sem Limite'}</td>
+        {trainingsList.map((training, key) => (
+          <tr style={{ cursor: 'pointer' }} key={key} onClick={() => handleTrainingClick(training.ID)}>
+            <td>{training.dateCreated}</td>
+            <td>{training.portal}</td>
+            <td>{'teste'}</td>
+            <td>{training.title}</td>
+            <td>{training.dateLimit ? training.dateLimit : 'Sem Limite'}</td>
             <td className='text-center'>
-              <FontAwesomeIcon icon={item.realizada ? faCheck : faX} color={item.realizada ? 'green' : 'red'} />
+              <FontAwesomeIcon icon={training.isFinished === 1 ? faCheck : faX} color={training.isFinished === 1 ? 'green' : 'red'} />
             </td>
           </tr>
         ))}

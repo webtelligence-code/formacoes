@@ -52,7 +52,7 @@ const TrainingData = ({
 
       {/* Title */}
       <div style={{ display: 'flex', flexDirection: 'column', marginBottom: 10 }}>
-        <label style={{ fontWeight: '700' }}>Título</label>
+        <label style={{ fontWeight: '700' }}>Título *</label>
         <Input
           placeholder='Introduza um título'
           allowClear
@@ -72,7 +72,7 @@ const TrainingData = ({
           <Select
             className='brand-tooltip'
             isDisabled={title.length < 5}
-            onChange={(option) => setBrand(option)}
+            onChange={(option) => setBrand(option.value)}
             placeholder={<label>Selecione a marca<FontAwesomeIcon icon={faCar} className='ms-2' /></label>}
             name='brand'
             isClearable
@@ -83,12 +83,12 @@ const TrainingData = ({
 
       {/* Location */}
       <div style={{ display: 'flex', flexDirection: 'column', marginBottom: 10 }}>
-        <label style={{ fontWeight: '700' }}>Localização</label>
+        <label style={{ fontWeight: '700' }}>Localização *</label>
 
         {/* Wrapped location */}
         <a data-tooltip-id='location-tooltip' data-tooltip-content='O título deve ter pelo menos 5 caracteres'>
           <Select
-            onChange={(option) => setLocation(option)}
+            onChange={(option) => setLocation(option.value)}
             placeholder={<label>Selecione a localização<FontAwesomeIcon icon={faMapLocationDot} className='ms-2' /></label>}
             name='location'
             isClearable
@@ -101,24 +101,52 @@ const TrainingData = ({
       {/* Has date limit switch state (true/false) */}
       <div style={{ marginBottom: 10 }}>
         <label style={{ fontWeight: '700' }}>Sem limite de data</label>
-        <Switch style={{ backgroundColor: switchDateCheked ? 'green' : 'red' }} checkedChildren="Sim" unCheckedChildren="Não" className='ms-2' onChange={(checked) => setSwitchDateChecked(checked)} />
+        <a data-tooltip-id='switch-date-tooltip' data-tooltip-content='O título deve ter pelo menos 5 caracteres'>
+          <Switch
+            style={{ backgroundColor: switchDateCheked ? 'green' : 'red' }}
+            checkedChildren="Sim"
+            unCheckedChildren="Não"
+            className='ms-2'
+            onChange={(checked) => setSwitchDateChecked(checked)}
+            disabled={title.length < 5}
+          />
+        </a>
       </div>
 
       {/* If has date limit is checked then remove Date and time picker */}
       {!switchDateCheked && (
         <Row>
           <Col>
-            <div style={{ display: 'flex', flexDirection: 'column', marginBottom: 10 }}>
-              <label style={{ fontWeight: '700' }}>Selecione a data limite</label>
-              <DatePicker showTime format="DD/MM/YYYY" onChange={(date, dateString) => onChangeDateAndTime('date', date, dateString)} allowClear />
+            <div
+              data-tooltip-id='date-tooltip'
+              data-tooltip-content='Deve selecionar uma localização'
+              style={{ display: 'flex', flexDirection: 'column', marginBottom: 10 }}
+            >
+              <label style={{ fontWeight: '700' }}>Selecione a data limite *</label>
+              <DatePicker
+                disabled={!location}
+                showTime
+                format="DD/MM/YYYY"
+                onChange={(date, dateString) => onChangeDateAndTime('date', date, dateString)}
+                allowClear
+              />
               {selectedDate && (<p>Selected Date: {selectedDate.format('DD/MM/YYYY')}</p>)}
             </div>
           </Col>
 
           <Col>
-            <div style={{ display: 'flex', flexDirection: 'column', marginBottom: 10 }}>
-              <label style={{ fontWeight: '700' }}>Selecione o horário limite</label>
-              <TimePicker format="HH:mm" onChange={(time, timeString) => onChangeDateAndTime('time', time, timeString)} allowClear />
+            <div
+              data-tooltip-id='time-tooltip'
+              data-tooltip-content='Deve selecionar uma data limite'
+              style={{ display: 'flex', flexDirection: 'column', marginBottom: 10 }}
+            >
+              <label style={{ fontWeight: '700' }}>Selecione o horário limite *</label>
+              <TimePicker
+                disabled={!selectedDate}
+                format="HH:mm"
+                onChange={(time, timeString) => onChangeDateAndTime('time', time, timeString)}
+                allowClear
+              />
               {selectedTime && (<p>Selected Time: {selectedTime.format('HH:mm')}</p>)}
             </div>
           </Col>
@@ -130,7 +158,14 @@ const TrainingData = ({
         <Fragment>
           <Tooltip id='brand-tooltip' />
           <Tooltip id='location-tooltip' />
+          <Tooltip id='switch-date-tooltip' />
         </Fragment>
+      )}
+      {!location && (
+        <Tooltip id='date-tooltip' />
+      )}
+      {!selectedDate && (
+        <Tooltip id='time-tooltip' />
       )}
     </Fragment>
   )

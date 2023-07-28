@@ -1,19 +1,33 @@
-import React, { Fragment } from 'react'
+import React, { Fragment, useCallback, useEffect, useState } from 'react'
 import CustomTable from '../components/ListTrainingPage/CustomTable';
+import axios from 'axios';
+import chalk from 'chalk';
 
-const ListTrainingPage = ({ handleTrainingClick }) => {
-  // Sample data
-  const data = [
-    { id: 1, data: '2020-08-06', portal: 'A MatosCar', plataforma: 'Requisiçoes Internas', titulo: 'Video Formação', dataLimite: null, realizada: false },
-    { id: 2, data: '2020-08-19', portal: 'A MatosCar', plataforma: 'Medidas de prevenção e Proteção em Oficinas de Reparação', titulo: '1- introdução', dataLimite: null, realizada: true },
-    { id: 3, data: '2020-08-19', portal: 'A MatosCar', plataforma: 'Medidas de prevenção e Proteção em Oficinas de Reparação', titulo: '2- A pandemia Covid19', dataLimite: null, realizada: false },
-    { id: 4, data: '2020-08-19', portal: 'A MatosCar', plataforma: 'Medidas de prevenção e Proteção em Oficinas de Reparação', titulo: '3- EPI', dataLimite: null, realizada: false },
-    // Add more data as needed
-  ];
+const ListTrainingPage = ({ API_URL, handleTrainingClick }) => {
+  const [trainingsList, setTrainingsList] = useState([]);
+
+  const fetchAllTrainings = useCallback(() => {
+    axios.get(API_URL, {
+      params: {
+        action: 'get_all_trainings'
+      }
+    })
+      .then((response) => {
+        console.log(chalk.green('Fetched All Trainings ->'), response.data);
+        setTrainingsList(response.data)
+      })
+      .catch((error) => {
+        console.log(chalk.red('Failed to fetch all trainings from API'), error)
+      })
+  }, [API_URL])
+
+  useEffect(() => {
+    fetchAllTrainings();
+  }, [fetchAllTrainings]);
 
   return (
     <Fragment>
-      <CustomTable data={data} handleTrainingClick={handleTrainingClick} />
+      <CustomTable trainingsList={trainingsList} handleTrainingClick={handleTrainingClick} />
     </Fragment>
   )
 }

@@ -20,7 +20,7 @@ const TrainingCollaborators = ({ switchCollaboratorsChecked, setSwitchCollaborat
       {/* If switch state is true then we hide options select */}
       {!switchCollaboratorsChecked && (
         <Select
-          onChange={(option) => setSelectedUsers(option)}
+          onChange={(options) => setSelectedUsers(options.map((option) => option.value))}
           placeholder={<label>Selecione os Colaboradores<FontAwesomeIcon icon={faPeopleGroup} className='ms-2' /></label>}
           name='location'
           isClearable

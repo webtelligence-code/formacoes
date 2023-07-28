@@ -26,8 +26,8 @@ const RegisterTrainingPage = ({ sessionUsername, API_URL }) => {
 
   // Selected States
   const [title, setTitle] = useState('');
-  const [brand, setBrand] = useState('');
-  const [location, setLocation] = useState('');
+  const [brand, setBrand] = useState(null);
+  const [location, setLocation] = useState(null);
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState(null);
   const [selectedUsers, setSelectedUsers] = useState([]);
@@ -190,24 +190,28 @@ const RegisterTrainingPage = ({ sessionUsername, API_URL }) => {
       millisecond: 0,
     });
 
+    const formattedDatetimeLimit = datetimeLimit.format('YYYY-MM-DD HH:mm:ss');
+
     // Set portal based
     const portal = brand === '' ? 'A MatosCar' : 'Marca';
 
     // Current datetime
-    const currentDatetime = moment();
+    const currentDatetime = moment().toISOString();
+    const formattedDatetime = moment(currentDatetime).format('YYYY-MM-DD HH:mm:ss');
 
-    //const image = 
+    const action = 'insert_training';
+    const formData = new FormData();
 
     // Training object 
     const training = {
-      dateCreated: currentDatetime,
-      dateUpdated: currentDatetime,
-      dateLimit: datetimeLimit.toISOString(), // Convert the moment object to a string
+      dateCreated: formattedDatetime,
+      dateUpdated: formattedDatetime,
+      dateLimit: formattedDatetimeLimit, // Convert the moment object to a string
       title,
       brand,
       location,
       description,
-      isFinished: false,
+      isFinished: 0,
       portal,
       image: null,
       filePath: null,
@@ -219,20 +223,21 @@ const RegisterTrainingPage = ({ sessionUsername, API_URL }) => {
     const trainingCollaborators = {
       collaborators: selectedUsers,
       isAll: 0,
-      certificateFilePath: '',
+      certificateFilePath: null,
       certificateDate: null,
       dateOpened: null,
       finishedDate: null
     }
 
+    formData.append('action', action);
+    formData.append('training', JSON.stringify(training));
+    formData.append('trainingCollaborators', JSON.stringify(trainingCollaborators));
+
+    console.log(chalk.green('Training Object ->'), training)
+    console.log(chalk.green('Training Collaborators Object ->'), trainingCollaborators)
+
     // Send POST request to the API
-    axios.post(API_URL, {
-      params: {
-        action: 'register_training',
-        training,
-        trainingCollaborators
-      }
-    })
+    axios.post(API_URL, formData)
       .then((response) => {
         console.log(chalk.green('Response from register training request:'), response.data)
       })

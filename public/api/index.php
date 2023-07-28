@@ -26,6 +26,9 @@ switch ($method) {
             case 'get_all_users':
                 $response = getAllUsers();
                 break;
+            case 'get_all_trainings':
+                $response = getAllTrainings();
+                break;
         }
 
         echo json_encode($response);
@@ -36,16 +39,13 @@ switch ($method) {
         $post_action = isset($_POST['action']) ? $_POST['action'] : '';
         $response = null;
 
-        // switch ($post_action) {
-        //     case 'add_meeting':
-        //         $meeting = json_decode($_POST['meeting'], true);
-        //         $response = addMeeting($meeting);
-        //         break;
-        //     case 'update_meeting':
-        //         $meeting = json_decode($_POST['meeting'], true);
-        //         $response = updateMeeting($meeting);
-        //         break;
-        // }
+        switch ($post_action) {
+            case 'insert_training':
+                $training = json_decode($_POST['training'], true);
+                $trainingCollaborators = json_decode($_POST['trainingCollaborators'], true);
+                $response = insertTrainingData($training, $trainingCollaborators);
+                break;
+        }
 
         echo json_encode($response); // return $response
         break;
