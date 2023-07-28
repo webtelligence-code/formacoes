@@ -25,19 +25,14 @@ $databaseObj = new DatabaseConnect;
 $conn = $databaseObj->connect();
 
 // This function will store allthe session variables into an array to send to frontend
-function getSessionData()
+function getSessionUsername()
 {
   session_start();
 
-  $sessionData = array();
+  // For testing purposes only !!!
+  $_SESSION['USERNAME'] = 'manuelcarreiras@EST2';
 
-  // Loop through all the session data variables and store them in the array
-  foreach ($_SESSION as $key => $value) {
-    $sessionData[$key] = $value;
-  }
-
-  // Encode the session data array to json format
-  return json_encode($sessionData);
+  return $_SESSION['USERNAME'];
 }
 
 /**
@@ -84,6 +79,10 @@ function getAllCities()
   }
 
   $conn->close();
+
+  // Add theadditional cities to the begginning of the array
+  array_unshift($cities, 'Lisboa');
+  array_unshift($cities, 'Online');
 
   return $cities;
 }

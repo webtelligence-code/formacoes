@@ -3,11 +3,12 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React from 'react';
 import Table from 'react-bootstrap/Table';
 
-const CustomTable = ({ columns, data }) => {
+const CustomTable = ({ data, handleTrainingClick }) => {
 
   return (
     <Table hover className='w-100'>
 
+      {/* Table header */}
       <thead>
         <tr>
           <th>Data</th>
@@ -19,9 +20,10 @@ const CustomTable = ({ columns, data }) => {
         </tr>
       </thead>
 
+      {/* Table body */}
       <tbody>
         {data.map((item, key) => (
-          <tr key={key}>
+          <tr style={{ cursor: 'pointer' }} key={key} onClick={() => handleTrainingClick(item.id)}>
             <td>{item.data}</td>
             <td>{item.portal}</td>
             <td>{item.plataforma}</td>

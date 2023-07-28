@@ -1,4 +1,4 @@
-import { faBuilding, faFilterCircleXmark, faPlus } from '@fortawesome/free-solid-svg-icons'
+import { faFilterCircleXmark, faPlus } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faAngleLeft } from '@fortawesome/free-solid-svg-icons'
 import { Button } from 'antd'

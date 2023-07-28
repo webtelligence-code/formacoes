@@ -1,10 +1,8 @@
 import TextArea from 'antd/es/input/TextArea'
 import React from 'react'
-import { useState } from 'react';
 import { Fragment } from 'react'
 
-const TrainingDescription = () => {
-  const [description, setDescription] = useState('');
+const TrainingDescription = ({ description, setDescription }) => {
   const maxCharacters = 350;
 
   // Function to update the description state and character count
@@ -27,11 +25,11 @@ const TrainingDescription = () => {
         placeholder='Máximo de caracteres é 350'
         maxLength={maxCharacters}
         onChange={handleChange}
-        
+        value={description}
       />
 
       {/* Display remaining character count */}
-      <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'end'}}>
+      <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'end' }}>
         <p style={{ fontWeight: 'lighter', color: 'gray', fontSize: 14 }}>Caracteres disponíveis: {remainingCharacters}</p>
       </div>
     </Fragment>

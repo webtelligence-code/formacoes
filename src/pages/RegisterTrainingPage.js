@@ -1,5 +1,4 @@
 import React, { Fragment } from 'react'
-import TopNav from '../components/utility/TopNav'
 import TrainingData from '../components/RegisterTrainingPage/TrainingData'
 import TrainingCollaborators from '../components/RegisterTrainingPage/TrainingCollaborators'
 import TrainingDescription from '../components/RegisterTrainingPage/TrainingDescription'
@@ -12,17 +11,27 @@ import { Col, Row } from 'react-bootstrap';
 import { Button } from 'antd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faGraduationCap } from '@fortawesome/free-solid-svg-icons'
+import moment from 'moment'
+import unorm from 'unorm'
 
-const RegisterTrainingPage = ({ setPage, API_URL }) => {
-  const [title, setTitle] = useState('');
-  const [brands, setBrands] = useState([]);
-  const [location, setLocation] = useState('');
-  const [cities, setCities] = useState([]);
-  const [users, setUsers] = useState([]);
-  const [selectedDate, setSelectedDate] = useState(null);
-  const [selectedTime, setSelectedTime] = useState(null);
+const RegisterTrainingPage = ({ sessionUsername, API_URL }) => {
+  // Lists
+  const [brandsList, setBrandsList] = useState([]);
+  const [citiesList, setCitiesList] = useState([]);
+  const [usersList, setUsersList] = useState([]);
+
+  // Switches
   const [switchDateCheked, setSwitchDateChecked] = useState(false)
   const [switchCollaboratorsChecked, setSwitchCollaboratorsChecked] = useState(false)
+
+  // Selected States
+  const [title, setTitle] = useState('');
+  const [brand, setBrand] = useState('');
+  const [location, setLocation] = useState('');
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedTime, setSelectedTime] = useState(null);
+  const [selectedUsers, setSelectedUsers] = useState([]);
+  const [description, setDescription] = useState('');
 
   /////////////////////////////////////////////////////////////////////////////////
   // REQUEST FUNCTIONS FOR REGISTER TRAINING PAGE
@@ -36,11 +45,28 @@ const RegisterTrainingPage = ({ setPage, API_URL }) => {
       })
       .then((response) => {
         console.log(chalk.green('Fetched All Brands ->'), response.data);
-        const formattedBrands = response.data.map((brand) => ({
-          value: brand,
-          label: brand,
-        }));
-        setBrands(formattedBrands);
+        const brandsFromApi = response.data;
+        const sortedBrands = brandsFromApi.sort((a, b) => a.localeCompare(b));
+
+        // Group brands y the first character of their names
+        const groupedBrands = sortedBrands.reduce((acc, brand) => {
+          const firstChar = brand.charAt(0).toUpperCase();
+          if (!acc[firstChar]) {
+            acc[firstChar] = [];
+          }
+          acc[firstChar].push(brand);
+          return acc;
+        }, {})
+
+        const formattedBrands = Object.entries(groupedBrands).map(([letter, brands]) => ({
+          label: letter,
+          options: brands.map((brand) => ({
+            value: brand,
+            label: brand,
+          })),
+        }))
+
+        setBrandsList(formattedBrands);
       })
       .catch((error) => {
         console.log(chalk.red('Failed fetching all Brands...'), error);
@@ -56,36 +82,93 @@ const RegisterTrainingPage = ({ setPage, API_URL }) => {
       })
       .then((response) => {
         console.log(chalk.green('Fetched All Cities ->'), response.data);
-        const formattedCities = response.data.map((city) => ({
-          value: city,
-          label: city,
-        }));
-        setCities(formattedCities);
+        // Response data from API
+        const citiesFromApi = response.data;
+        const onlineAndLisboa = ['Online', 'Lisboa']; // External required options
+
+        // Group 'Online' and 'Lisboa' together
+        const onlineAndLisboaCities = citiesFromApi.filter((city) =>
+          onlineAndLisboa.includes(city)
+        );
+
+        // Group company concession cities
+        const otherCities = citiesFromApi.filter(
+          (city) => !onlineAndLisboa.includes(city)
+        );
+
+        // Format cities by grouping them together respectfully
+        const formattedCities = [
+          {
+            label: 'Online and Lisboa',
+            options: onlineAndLisboaCities.map((city) => ({
+              value: city,
+              label: city,
+            })),
+          },
+          {
+            label: 'Other Cities',
+            options: otherCities.map((city) => ({
+              value: city,
+              label: city,
+            })),
+          },
+        ];
+
+        // Assign formatted cities to cities list
+        setCitiesList(formattedCities);
       })
       .catch((error) => {
         console.log(chalk.red('Failed fetching all Cities...'), error);
       });
   }, [API_URL]);
 
+  // Function to fetch all users from API
   const fetchAllUsers = useCallback(() => {
-    axios.get(API_URL, {
-      params: {
-        action: 'get_all_users',
-      },
-    })
+    axios
+      .get(API_URL, {
+        params: {
+          action: 'get_all_users',
+        },
+      })
       .then((response) => {
         console.log(chalk.green('Users fetched ->'), response.data);
-        const formattedUsers = response.data.map((user) => ({
-          value: user.username,
-          label: user.nameDisplay,
-        }));
-        setUsers(formattedUsers)
+        const usersFromApi = response.data;
+
+        // Sort users based on name using the unorm library for normalization
+        const sortedUsers = usersFromApi.sort((a, b) =>
+          unorm.nfkd(a.nameDisplay).localeCompare(unorm.nfkd(b.nameDisplay))
+        );
+
+        // Group users by the first character of their names
+        const groupedUsers = sortedUsers.reduce((acc, user) => {
+          const firstChar = unorm.nfkd(user.nameDisplay).charAt(0).toUpperCase();
+          if (!acc[firstChar]) {
+            acc[firstChar] = [];
+          }
+          acc[firstChar].push(user);
+          return acc;
+        }, {});
+
+        // Format users
+        const formattedUsers = Object.entries(groupedUsers).map(
+          ([letter, users]) => ({
+            label: letter,
+            options: users.map((user) => ({
+              value: user.username,
+              label: user.nameDisplay,
+            })),
+          })
+        );
+
+        // Set formatted users to users list
+        setUsersList(formattedUsers);
       })
       .catch((error) => {
-        console.log(chalk.red('Error fetching users ->'), error)
-      })
-  }, [API_URL])
+        console.log(chalk.red('Error fetching users ->'), error);
+      });
+  }, [API_URL]);
 
+  // useEffect controller to call API functions when component is loaded
   useEffect(() => {
     // Fetch all brands when the component mounts
     fetchAllBrands();
@@ -93,16 +176,77 @@ const RegisterTrainingPage = ({ setPage, API_URL }) => {
     fetchAllUsers();
   }, [fetchAllBrands, fetchAllCities, fetchAllUsers]);
 
+  /////////////////////////////////////////////////////////////////////////////////
+  // INTERACT FUNCTIONS FOR REGISTER TRAINING PAGE
+  ////////////////////////////////////////////////////////////////////////////////
+
+  // This function will submit the training form data to the API
   const submitTraining = async () => {
-    
+    // Convert selectedDate and selectedTime to datetime format using moment library
+    const datetimeLimit = moment(selectedDate).set({
+      hour: selectedTime?.hour(),
+      minute: selectedTime?.minute(),
+      second: 0,
+      millisecond: 0,
+    });
+
+    // Set portal based
+    const portal = brand === '' ? 'A MatosCar' : 'Marca';
+
+    // Current datetime
+    const currentDatetime = moment();
+
+    //const image = 
+
+    // Training object 
+    const training = {
+      dateCreated: currentDatetime,
+      dateUpdated: currentDatetime,
+      dateLimit: datetimeLimit.toISOString(), // Convert the moment object to a string
+      title,
+      brand,
+      location,
+      description,
+      isFinished: false,
+      portal,
+      image: null,
+      filePath: null,
+      usernameCreated: sessionUsername,
+      usernameUpdated: sessionUsername,
+    }
+
+    // Object for training collaborators
+    const trainingCollaborators = {
+      collaborators: selectedUsers,
+      isAll: 0,
+      certificateFilePath: '',
+      certificateDate: null,
+      dateOpened: null,
+      finishedDate: null
+    }
+
+    // Send POST request to the API
+    axios.post(API_URL, {
+      params: {
+        action: 'register_training',
+        training,
+        trainingCollaborators
+      }
+    })
+      .then((response) => {
+        console.log(chalk.green('Response from register training request:'), response.data)
+      })
+      .catch((error) => {
+        console.log(chalk.red('Failed to send POST request for register training ->'), error)
+      })
   }
+
+  useEffect(() => {
+    if (selectedUsers) console.log(chalk.blue('Selected users ->'), selectedUsers)
+  }, [selectedUsers])
 
   return (
     <Fragment>
-
-      {/* Top Custom Navbar with props for Register Training Page */}
-      <TopNav title={'Registar Formação'} showFilters={false} setPage={setPage} buttonText={'Voltar'} />
-
       <Row>
         {/* Left side form (Training Data) */}
         <Col>
@@ -112,10 +256,11 @@ const RegisterTrainingPage = ({ setPage, API_URL }) => {
             API_URL={API_URL}
             title={title}
             setTitle={setTitle}
-            brands={brands}
+            brandsList={brandsList}
+            setBrand={setBrand}
             location={location}
             setLocation={setLocation}
-            cities={cities}
+            citiesList={citiesList}
             selectedDate={selectedDate}
             setSelectedDate={setSelectedDate}
             selectedTime={selectedTime}
@@ -132,11 +277,12 @@ const RegisterTrainingPage = ({ setPage, API_URL }) => {
           <TrainingCollaborators
             switchCollaboratorsChecked={switchCollaboratorsChecked}
             setSwitchCollaboratorsChecked={setSwitchCollaboratorsChecked}
-            users={users}
+            usersList={usersList}
+            setSelectedUsers={setSelectedUsers}
           />
 
           {/* Description component */}
-          <TrainingDescription />
+          <TrainingDescription description={description} setDescription={setDescription} />
 
         </Col>
 
@@ -144,7 +290,7 @@ const RegisterTrainingPage = ({ setPage, API_URL }) => {
 
       {/* Button to register training (onClick Available soon) */}
       <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'end', marginTop: 10 }}>
-        <Button type='primary' style={{ backgroundColor: 'green' }} onClick={() => { }} icon={<FontAwesomeIcon icon={faGraduationCap} />}>Registar</Button>
+        <Button type='primary' style={{ backgroundColor: 'green' }} onClick={submitTraining} icon={<FontAwesomeIcon icon={faGraduationCap} />}>Registar</Button>
       </div>
 
     </Fragment>

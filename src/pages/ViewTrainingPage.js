@@ -1,8 +1,8 @@
 import React from 'react'
 
-const ViewTrainingPage = () => {
+const ViewTrainingPage = ({ trainingID }) => {
   return (
-    <div>View Training Page</div>
+    <div>TrainingID: {trainingID}</div>
   )
 }
 
