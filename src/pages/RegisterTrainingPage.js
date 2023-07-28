@@ -93,6 +93,10 @@ const RegisterTrainingPage = ({ setPage, API_URL }) => {
     fetchAllUsers();
   }, [fetchAllBrands, fetchAllCities, fetchAllUsers]);
 
+  const submitTraining = async () => {
+    
+  }
+
   return (
     <Fragment>
 
@@ -102,6 +106,8 @@ const RegisterTrainingPage = ({ setPage, API_URL }) => {
       <Row>
         {/* Left side form (Training Data) */}
         <Col>
+
+          {/* Main data component */}
           <TrainingData
             API_URL={API_URL}
             title={title}
@@ -121,18 +127,22 @@ const RegisterTrainingPage = ({ setPage, API_URL }) => {
 
         {/* Right side form (Collaborators and Description) */}
         <Col>
+
+          {/* Collaborators component */}
           <TrainingCollaborators
             switchCollaboratorsChecked={switchCollaboratorsChecked}
             setSwitchCollaboratorsChecked={setSwitchCollaboratorsChecked}
             users={users}
           />
 
+          {/* Description component */}
           <TrainingDescription />
 
         </Col>
 
       </Row>
 
+      {/* Button to register training (onClick Available soon) */}
       <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'end', marginTop: 10 }}>
         <Button type='primary' style={{ backgroundColor: 'green' }} onClick={() => { }} icon={<FontAwesomeIcon icon={faGraduationCap} />}>Registar</Button>
       </div>

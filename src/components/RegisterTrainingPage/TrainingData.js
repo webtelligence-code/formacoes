@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/anchor-is-valid */
 import { faCar, faGraduationCap, faMapLocationDot } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Button, Switch, DatePicker, TimePicker, Input } from 'antd';
@@ -5,6 +6,7 @@ import chalk from 'chalk';
 import React, { Fragment } from 'react'
 import { Row, Col } from 'react-bootstrap'
 import Select from 'react-select'
+import { Tooltip } from 'react-tooltip'
 
 const TrainingData = ({
   API_URL,
@@ -49,18 +51,31 @@ const TrainingData = ({
 
       <div style={{ display: 'flex', flexDirection: 'column', marginBottom: 10 }}>
         <label style={{ fontWeight: '700' }}>Título</label>
-        <Input allowClear name='title' value={title} onChange={(e) => setTitle(e.target.value)} required />
+        <Input
+          placeholder='Introduza um título'
+          allowClear
+          name='title'
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          required
+        />
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', marginBottom: 10 }}>
         <label style={{ fontWeight: '700' }}>Marca</label>
-        <Select
-          onChange={() => { }}
-          placeholder={<label>Selecione a marca<FontAwesomeIcon icon={faCar} className='ms-2' /></label>}
-          name='brand'
-          isClearable
-          options={brands}
-        />
+        
+        <a data-tooltip-id='brand-tooltip' data-tooltip-content='O título de ter pelo menos 5 caracteres'>
+          <Select
+            className='brand-tooltip'
+            isDisabled={title.length < 5}
+            onChange={() => { }}
+            placeholder={<label>Selecione a marca<FontAwesomeIcon icon={faCar} className='ms-2' /></label>}
+            name='brand'
+            isClearable
+            options={brands}
+          />
+        </a>
+        {title.length < 5 && (<Tooltip id='brand-tooltip' />)}
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', marginBottom: 10 }}>
@@ -76,7 +91,7 @@ const TrainingData = ({
 
       <div style={{ marginBottom: 10 }}>
         <label style={{ fontWeight: '700' }}>Sem limite de data</label>
-        <Switch style={{backgroundColor: switchDateCheked ? 'green' : 'red'}} checkedChildren="Sim" unCheckedChildren="Não" className='ms-2' onChange={(checked) => setSwitchDateChecked(checked)} />
+        <Switch style={{ backgroundColor: switchDateCheked ? 'green' : 'red' }} checkedChildren="Sim" unCheckedChildren="Não" className='ms-2' onChange={(checked) => setSwitchDateChecked(checked)} />
       </div>
 
       {!switchDateCheked && (

@@ -25,7 +25,7 @@ const Filters = ({ setPage, buttonText, showFilters }) => {
           <Col>
             <Select
               onChange={() => { }}
-              placeholder={<label>Filtrar portal<FontAwesomeIcon icon={faBuilding} className='ms-2' /></label>}
+              placeholder={<label><FontAwesomeIcon icon={faFilterCircleXmark} className='me-2' />Portal</label>}
               name='portal'
               isClearable
               options={[]}
@@ -35,7 +35,7 @@ const Filters = ({ setPage, buttonText, showFilters }) => {
           <Col>
             <Select
               onChange={() => { }}
-              placeholder={<label>Filtrar plataforma<FontAwesomeIcon icon={faBuilding} className='ms-2' /></label>}
+              placeholder={<label><FontAwesomeIcon icon={faFilterCircleXmark} className='me-2' />Plataforma</label>}
               name='plataforma'
               isClearable
               options={[]}
@@ -45,7 +45,7 @@ const Filters = ({ setPage, buttonText, showFilters }) => {
           <Col>
             <Select
               onChange={() => { }}
-              placeholder={<label>Filtrar realização<FontAwesomeIcon icon={faBuilding} className='ms-2' /></label>}
+              placeholder={<label><FontAwesomeIcon icon={faFilterCircleXmark} className='me-2' />Realização</label>}
               name='realizada'
               isClearable
               options={[]}
@@ -53,7 +53,13 @@ const Filters = ({ setPage, buttonText, showFilters }) => {
           </Col>
 
           <Col>
-            <Button className='h-100 w-100' icon={<FontAwesomeIcon icon={faFilterCircleXmark} />}>Limpar filtros</Button>
+            <Button
+              disabled
+              className='h-100 w-100'
+              icon={<FontAwesomeIcon icon={faFilterCircleXmark} />}
+            >
+              Limpar filtros
+            </Button>
           </Col>
         </Fragment>
       )}
