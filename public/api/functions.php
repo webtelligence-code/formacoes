@@ -189,7 +189,9 @@ function insertTrainingData($training, $trainingCollaborators)
 
     // Commit the transaction
     $conn->commit();
-    echo var_dump($training, $trainingCollaborators);
+    return [
+      'status' => 'Success',
+    ];
   } catch (Exception $e) {
     // If there's any error, rollback the transaction
     $conn->rollback();

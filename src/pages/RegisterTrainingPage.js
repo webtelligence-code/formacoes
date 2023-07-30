@@ -8,13 +8,13 @@ import { useCallback } from 'react';
 import axios from 'axios';
 import { useState } from 'react';
 import { Col, Row } from 'react-bootstrap';
-import { Button } from 'antd'
+import { Button, message, Popconfirm } from 'antd'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faGraduationCap } from '@fortawesome/free-solid-svg-icons'
 import moment from 'moment'
 import unorm from 'unorm'
 
-const RegisterTrainingPage = ({ sessionUsername, API_URL }) => {
+const RegisterTrainingPage = ({ sessionUsername, API_URL, setPage }) => {
   // Lists
   const [brandsList, setBrandsList] = useState([]);
   const [citiesList, setCitiesList] = useState([]);
@@ -32,6 +32,9 @@ const RegisterTrainingPage = ({ sessionUsername, API_URL }) => {
   const [selectedTime, setSelectedTime] = useState(null);
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [description, setDescription] = useState('');
+
+  // Loading State
+  const [loading, setLoading] = useState(false)
 
   /////////////////////////////////////////////////////////////////////////////////
   // REQUEST FUNCTIONS FOR REGISTER TRAINING PAGE
@@ -180,8 +183,24 @@ const RegisterTrainingPage = ({ sessionUsername, API_URL }) => {
   // INTERACT FUNCTIONS FOR REGISTER TRAINING PAGE
   ////////////////////////////////////////////////////////////////////////////////
 
+  const confirm = (e) => {
+    console.log(chalk.cyan(e));
+    submitTraining();
+  }
+
+  const cancel = (e) => {
+    console.log(chalk.cyan(e));
+    message.error('Ação cancelada');
+  }
+
+  useEffect(() => {
+    if (switchCollaboratorsChecked) setSelectedUsers(usersList.map(user => user.value))
+    else setSelectedUsers([])
+  }, [switchCollaboratorsChecked, usersList])
+
   // This function will submit the training form data to the API
   const submitTraining = async () => {
+    setLoading(true);
     // Convert selectedDate and selectedTime to datetime format using moment library
     const datetimeLimit = moment(selectedDate).set({
       hour: selectedTime?.hour(),
@@ -239,15 +258,25 @@ const RegisterTrainingPage = ({ sessionUsername, API_URL }) => {
     // Send POST request to the API
     axios.post(API_URL, formData)
       .then((response) => {
+        if (response.data.status === 'Success') {
+          setLoading(false);
+          message.success('Formação registada com sucesso!');
+        } else {
+          setLoading(false);
+          message.error('Ocurreu um erro inesperado!').then(() => {
+            setPage('List')
+          });
+        }
         console.log(chalk.green('Response from register training request:'), response.data)
       })
       .catch((error) => {
+        setLoading(false);
         console.log(chalk.red('Failed to send POST request for register training ->'), error)
       })
   }
 
   useEffect(() => {
-    if (selectedUsers) console.log(chalk.blue('Selected users ->'), selectedUsers)
+    
   }, [selectedUsers])
 
   return (
@@ -295,7 +324,24 @@ const RegisterTrainingPage = ({ sessionUsername, API_URL }) => {
 
       {/* Button to register training (onClick Available soon) */}
       <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'end', marginTop: 10 }}>
-        <Button type='primary' style={{ backgroundColor: 'green' }} onClick={submitTraining} icon={<FontAwesomeIcon icon={faGraduationCap} />}>Registar</Button>
+        <Popconfirm
+          title="Registar nova formação"
+          description="Pretende continuar com esta ação?"
+          onConfirm={confirm}
+          onCancel={cancel}
+          okText="Sim"
+          cancelText="Ainda não"
+
+        >
+          <Button
+            loading={loading}
+            type='primary'
+            style={{ backgroundColor: 'green' }}
+            icon={<FontAwesomeIcon icon={faGraduationCap} />}
+          >
+            Registar
+          </Button>
+        </Popconfirm>
       </div>
 
     </Fragment>

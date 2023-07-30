@@ -77,7 +77,7 @@ function App() {
 
       {/* Pages */}
       {page === 'List' && (<ListTrainingPage handleTrainingClick={handleTrainingClick} API_URL={API_URL} />)}
-      {page === 'Register' && (<RegisterTrainingPage sessionUsername={sessionUsername} API_URL={API_URL} />)}
+      {page === 'Register' && (<RegisterTrainingPage sessionUsername={sessionUsername} API_URL={API_URL} setPage={setPage} />)}
       {page === 'View' && (<ViewTrainingPage trainingID={trainingID} API_URL={API_URL} />)}
     </Container>
   );
