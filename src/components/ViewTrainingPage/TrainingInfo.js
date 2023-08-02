@@ -1,8 +1,24 @@
 import React from 'react'
+import { Card } from 'react-bootstrap'
 
-const TrainingInfo = () => {
+const TrainingInfo = ({ training, collaborators}) => {
   return (
-    <div>TrainingInfo</div>
+    <Card>
+      <Card.Header
+        as={'h5'}
+        style={{
+          backgroundColor: 'transparent',
+          color: '#ed6337'
+        }}
+        className='text-center'
+      >
+        {training.title}
+      </Card.Header>
+
+      <Card.Body>
+        {training.description}
+      </Card.Body>
+    </Card>
   )
 }
 

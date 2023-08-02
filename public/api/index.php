@@ -29,6 +29,10 @@ switch ($method) {
             case 'get_all_trainings':
                 $response = getAllTrainings();
                 break;
+            case 'get_training':
+                $trainingID = isset($_GET['trainingID']) ? $_GET['trainingID'] : '';
+                $response = getTraining($trainingID);
+                break;
         }
 
         echo json_encode($response);

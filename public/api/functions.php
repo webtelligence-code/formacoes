@@ -114,7 +114,7 @@ function getAllTrainings()
   global $conn;
 
   // SQL query to fetch all trainings
-  $sql = 'SELECT * FROM t_trainings';
+  $sql = 'SELECT * FROM t_trainings ORDER BY dateCreated DESC';
 
   $result = $conn->query($sql);
 
@@ -129,6 +129,38 @@ function getAllTrainings()
   $conn->close();
 
   return $trainings;
+}
+
+function getTraining($trainingID) {
+  global $conn;
+
+  // Fetch training from the t_trainings table
+  $trainingSql = "SELECT * FROM t_trainings WHERE ID = $trainingID";
+  $trainingResult = $conn->query($trainingSql);
+
+  if ($trainingResult && $trainingResult->num_rows > 0) {
+    $training = $trainingResult->fetch_assoc();
+
+    // Fetch associated collaborators from the t_training_collaborators table
+    $collaboratorsSql = "SELECT username FROM t_training_collaborators WHERE trainingID = $trainingID";
+    $collaboratorsResult = $conn->query($collaboratorsSql);
+
+    $collaborators = array();
+    if($collaboratorsResult && $collaboratorsResult->num_rows > 0) {
+      while ($collaborator = $collaboratorsResult->fetch_assoc()) {
+        $collaborators[] = $collaborator['username'];
+      }
+    }
+
+    // Add collaborators array to the training
+    $training['collaborators'] = $collaborators;
+  } else {
+    // If the training is not found, return null
+    return null;
+  }
+
+  // Return the training with collaborators
+  return $training;
 }
 
 // Function to insert training data and collaborators into the database

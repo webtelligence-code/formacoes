@@ -3,7 +3,7 @@ import CustomTable from '../components/ListTrainingPage/CustomTable';
 import axios from 'axios';
 import chalk from 'chalk';
 
-const ListTrainingPage = ({ API_URL, handleTrainingClick }) => {
+const ListTrainingPage = ({ API_URL, handleTrainingClick, sessionUsername }) => {
   const [trainingsList, setTrainingsList] = useState([]);
 
   const fetchAllTrainings = useCallback(() => {
@@ -27,7 +27,7 @@ const ListTrainingPage = ({ API_URL, handleTrainingClick }) => {
 
   return (
     <Fragment>
-      <CustomTable trainingsList={trainingsList} handleTrainingClick={handleTrainingClick} />
+      <CustomTable sessionUsername={sessionUsername} trainingsList={trainingsList} handleTrainingClick={handleTrainingClick} />
     </Fragment>
   )
 }

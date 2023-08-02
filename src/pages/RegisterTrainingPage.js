@@ -212,7 +212,7 @@ const RegisterTrainingPage = ({ sessionUsername, API_URL, setPage }) => {
     const formattedDatetimeLimit = datetimeLimit.format('YYYY-MM-DD HH:mm:ss');
 
     // Set portal based
-    const portal = brand === '' ? 'A MatosCar' : 'Marca';
+    const portal = !brand ? 'A MatosCar' : 'Marca';
 
     // Current datetime
     const currentDatetime = moment().toISOString();
@@ -260,11 +260,11 @@ const RegisterTrainingPage = ({ sessionUsername, API_URL, setPage }) => {
       .then((response) => {
         if (response.data.status === 'Success') {
           setLoading(false);
-          message.success('Formação registada com sucesso!');
+          message.success('Formação registada com sucesso!').then(() => setPage('List'));
         } else {
           setLoading(false);
           message.error('Ocurreu um erro inesperado!').then(() => {
-            setPage('List')
+            
           });
         }
         console.log(chalk.green('Response from register training request:'), response.data)

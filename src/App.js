@@ -51,7 +51,7 @@ function App() {
         setNavbarButtonText('Voltar');
         break;
       case 'View':
-        setNavbarTitle('Formação X');
+        setNavbarTitle('Formação');
         setNavbarButtonText('Voltar');
         break;
       default:
@@ -76,9 +76,9 @@ function App() {
       <TopNav title={navbarTitle} showFilters={page === 'List'} setPage={setPage} buttonText={navbarButtonText} />
 
       {/* Pages */}
-      {page === 'List' && (<ListTrainingPage handleTrainingClick={handleTrainingClick} API_URL={API_URL} />)}
+      {page === 'List' && (<ListTrainingPage sessionUsername={sessionUsername} handleTrainingClick={handleTrainingClick} API_URL={API_URL} />)}
       {page === 'Register' && (<RegisterTrainingPage sessionUsername={sessionUsername} API_URL={API_URL} setPage={setPage} />)}
-      {page === 'View' && (<ViewTrainingPage trainingID={trainingID} API_URL={API_URL} />)}
+      {page === 'View' && (<ViewTrainingPage trainingID={trainingID} API_URL={API_URL} setNavbarTitle={setNavbarTitle} />)}
     </Container>
   );
 }

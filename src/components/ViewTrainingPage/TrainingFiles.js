@@ -2,7 +2,7 @@ import React from 'react'
 
 const TrainingFiles = () => {
   return (
-    <div>TrainingFiles</div>
+    <h5>Anexos</h5>
   )
 }
 
