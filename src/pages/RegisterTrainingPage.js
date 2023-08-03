@@ -275,10 +275,6 @@ const RegisterTrainingPage = ({ sessionUsername, API_URL, setPage }) => {
       })
   }
 
-  useEffect(() => {
-    
-  }, [selectedUsers])
-
   return (
     <Fragment>
       <Row>
