@@ -14,8 +14,8 @@ switch ($method) {
     case 'GET':
         $get_action = isset($_GET['action']) ? $_GET['action'] : '';
         switch ($get_action) {
-            case 'get_session_username':
-                $response = getSessionUsername();
+            case 'get_session_data':
+                $response = getSessionData();
                 break;
             case 'get_all_brands':
                 $response = getAllBrands();
@@ -28,6 +28,9 @@ switch ($method) {
                 break;
             case 'get_all_trainings':
                 $response = getAllTrainings();
+                break;
+            case 'get_my_trainings':
+                $response = getMyTrainings($_GET['username']);
                 break;
             case 'get_training':
                 $trainingID = isset($_GET['trainingID']) ? $_GET['trainingID'] : '';
@@ -49,6 +52,18 @@ switch ($method) {
                 $trainingCollaborators = json_decode($_POST['trainingCollaborators'], true);
                 $response = insertTrainingData($training, $trainingCollaborators);
                 break;
+            case 'delete_training':
+                $trainingID = json_decode($_POST['trainingID'], true);
+                if ($trainingID) {
+                    $response = deleteTraining($trainingID);
+                } else {
+                    $response = [
+                        'icon' => 'error',
+                        'html' => 'É necessário o id da formação.',
+                        'title' => 'ID em falta.'
+                    ];
+                }
+                break;
         }
 
         echo json_encode($response); // return $response
@@ -60,14 +75,14 @@ switch ($method) {
         $delete_action = isset($_DELETE['action']) ? $_DELETE['action'] : '';
 
         // switch ($delete_action) {
-        //     case 'delete_meeting':
-        //         $meeting_id = isset($_DELETE['meeting_id']) ? $_DELETE['meeting_id'] : '';
-        //         if ($meeting_id) {
-        //             $response = deleteMeeting($meeting_id);
+        //     case 'delete_training':
+        //         $trainingID = isset($_DELETE['trainingID']) ? $_DELETE['trainingID'] : '';
+        //         if ($trainingID) {
+        //             $response = deleteTraining($trainingID);
         //         } else {
         //             $response = [
-        //                 'status' => 'error',
-        //                 'message' => 'É necessário o id da reunião.',
+        //                 'icon' => 'error',
+        //                 'html' => 'É necessário o id da formação.',
         //                 'title' => 'ID em falta.'
         //             ];
         //         }

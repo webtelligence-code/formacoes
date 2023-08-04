@@ -2,65 +2,53 @@ import React, { Fragment, useCallback, useEffect, useState } from 'react'
 import CustomTable from '../components/ListTrainingPage/CustomTable';
 import axios from 'axios';
 import chalk from 'chalk';
-import { Modal } from 'antd';
+import { Alert } from 'antd';
 
-const ListTrainingPage = ({ API_URL, handleTrainingClick, sessionUsername }) => {
+const ListTrainingPage = ({
+  isModalOpen,
+  API_URL,
+  handleTrainingClick,
+  sessionData
+}) => {
   const [trainingsList, setTrainingsList] = useState([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const fetchAllTrainings = useCallback(() => {
+  const actionType = sessionData.DEPARTAMENTO === 'Informático' ? 'get_all_trainings' : 'get_my_trainings';
+
+  const fetchTrainings = useCallback(() => {
     axios.get(API_URL, {
       params: {
-        action: 'get_all_trainings'
+        action: actionType,
+        username: sessionData.USERNAME
       }
     })
       .then((response) => {
         console.log(chalk.green('Fetched All Trainings ->'), response.data);
+        console.log(chalk.blue('Action type to fetchTrainings ->'), actionType)
         setTrainingsList(response.data)
       })
       .catch((error) => {
         console.log(chalk.red('Failed to fetch all trainings from API'), error)
       })
-  }, [API_URL])
+  }, [API_URL, actionType, sessionData.USERNAME])
 
   useEffect(() => {
-    fetchAllTrainings();
-  }, [fetchAllTrainings]);
-
-  /**
-   * This function will make a delete request to the server to delete the training on the database
-   * @param {integer} trainingID 
-   */
-  const deleteTraining = async (trainingID) => {
-    axios.delete(API_URL, {
-      params: {
-        action: 'delete_training',
-        trainingID
-      }
-    })
-      .then((response) => {
-        console.log(chalk.green('Success on deleting training on the server'), response.data);
-      })
-      .catch((error) => {
-        console.log(chalk.red('Failed to delete training on the server.'), error);
-      })
-  }
+    fetchTrainings();
+  }, [fetchTrainings]);
 
   return (
     <Fragment>
-      <CustomTable 
-      isModalOpen={isModalOpen}
-      setIsModalOpen={setIsModalOpen}
-      sessionUsername={sessionUsername} 
-      trainingsList={trainingsList} 
-      handleTrainingClick={handleTrainingClick} 
-      />
-      <Modal
-        title='Apagar formação?'
-        open={isModalOpen}
-      >
-        <p>De certeza que quer apagar a formação</p>
-      </Modal>
+      {trainingsList.length > 0 ? (
+        <CustomTable
+          API_URL={API_URL}
+          sessionData={sessionData}
+          trainingsList={trainingsList}
+          handleTrainingClick={handleTrainingClick}
+          fetchTrainings={fetchTrainings}
+        />
+      ) : (
+        <Alert message="Não tem nenhuma formação disponível" banner />
+      )}
+
     </Fragment>
   )
 }

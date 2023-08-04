@@ -15,7 +15,7 @@ function App() {
   const [navbarTitle, setNavbarTitle] = useState('Formações');
   const [navbarButtonText, setNavbarButtonText] = useState('Registar');
   const [trainingID, setTrainingID] = useState(null);
-  const [sessionUsername, setSessionUsername] = useState('');
+  const [sessionData, setSessionData] = useState({});
 
   /////////////////////////////////////////////////////////////////////////////////
   // REQUEST FUNCTIONS FOR REGISTER TRAINING PAGE
@@ -23,16 +23,16 @@ function App() {
   const fetchSessionData = useCallback(() => {
     axios.get(API_URL, {
       params: {
-        action: 'get_session_username'
+        action: 'get_session_data'
       }
     })
-    .then((response) => {
-      console.log(chalk.green('Fetched session data ->'), response.data);
-      setSessionUsername(response.data)
-    })
-    .catch((error) => {
-      console.log(chalk.red('Failed to fetch session data.'), error);
-    })
+      .then((response) => {
+        console.log(chalk.green('Fetched session data ->'), response.data);
+        setSessionData(response.data)
+      })
+      .catch((error) => {
+        console.log(chalk.red('Failed to fetch session data.'), error);
+      })
   }, []);
 
   useEffect(() => {
@@ -69,6 +69,8 @@ function App() {
     setPage('View'); // Set page to ViewTrainingPage
   }
 
+
+
   return (
     <Container>
 
@@ -76,9 +78,27 @@ function App() {
       <TopNav title={navbarTitle} showFilters={page === 'List'} setPage={setPage} buttonText={navbarButtonText} />
 
       {/* Pages */}
-      {page === 'List' && (<ListTrainingPage sessionUsername={sessionUsername} handleTrainingClick={handleTrainingClick} API_URL={API_URL} />)}
-      {page === 'Register' && (<RegisterTrainingPage sessionUsername={sessionUsername} API_URL={API_URL} setPage={setPage} />)}
-      {page === 'View' && (<ViewTrainingPage trainingID={trainingID} API_URL={API_URL} setNavbarTitle={setNavbarTitle} />)}
+      {(page === 'List') && (
+        <ListTrainingPage
+          sessionData={sessionData}
+          handleTrainingClick={handleTrainingClick}
+          API_URL={API_URL}
+        />
+      )}
+      {page === 'Register' && (
+        <RegisterTrainingPage
+          sessionData={sessionData}
+          API_URL={API_URL}
+          setPage={setPage}
+        />
+      )}
+      {page === 'View' && (
+        <ViewTrainingPage
+          trainingID={trainingID}
+          API_URL={API_URL}
+          setNavbarTitle={setNavbarTitle}
+        />
+      )}
     </Container>
   );
 }

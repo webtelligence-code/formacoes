@@ -29,14 +29,20 @@ $databaseObj = new DatabaseConnect;
 $conn = $databaseObj->connect();
 
 // This function will store allthe session variables into an array to send to frontend
-function getSessionUsername()
+function getSessionData()
 {
   session_start();
 
   // For testing purposes only !!!
   $_SESSION['USERNAME'] = 'manuelcarreiras@EST2';
+  $_SESSION['DEPARTAMENTO'] = 'Informático';
 
-  return $_SESSION['USERNAME'];
+  $sessionData = array(
+    'USERNAME' => $_SESSION['USERNAME'],
+    'DEPARTAMENTO' => $_SESSION['DEPARTAMENTO']
+  );
+
+  return $sessionData;
 }
 
 /**
@@ -115,6 +121,36 @@ function getAllTrainings()
 
   // SQL query to fetch all trainings
   $sql = 'SELECT * FROM t_trainings ORDER BY dateCreated DESC';
+
+  $result = $conn->query($sql);
+
+  $trainings = array();
+
+  if ($result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+      $trainings[] = $row;
+    }
+  }
+
+  $conn->close();
+
+  return $trainings;
+}
+
+// Function to fetch all trainings from the database
+function getMyTrainings($username)
+{
+  global $conn;
+
+  // SQL query to fetch all trainings
+  $sql = "SELECT t.*
+          FROM t_trainings t
+          LEFT JOIN t_training_collaborators tc ON t.ID = tc.trainingID
+          WHERE t.usernameCreated = '$username'
+            OR t.usernameUpdated = '$username'
+            OR tc.username = '$username'
+          GROUP BY t.ID
+          ORDER BY t.dateCreated DESC";
 
   $result = $conn->query($sql);
 
@@ -232,4 +268,45 @@ function insertTrainingData($training, $trainingCollaborators)
     // Close the database connection
     $conn->close();
   }
+}
+
+function deleteTraining($trainingID) {
+  global $conn;
+
+  // Start a transsaction to ensure that both deletions are successfull or none
+  $conn->begin_transaction();
+
+  // First, delete the collaborators associated with the training from t_training_collaborators
+  $deleteCollaboratorsQuery = "DELETE FROM t_training_collaborators WHERE trainingID = ?";
+  $deleteCollaboratorsStmt = $conn->prepare($deleteCollaboratorsQuery);
+  $deleteCollaboratorsStmt->bind_param('i', $trainingID);
+  $deleteCollaboratorsSuccess = $deleteCollaboratorsStmt->execute();
+
+  // Net, delete the training from t_trainings table
+  $deleteTrainingQuery = "DELETE FROM t_trainings WHERE ID = ?";
+  $deleteTrainingStmt = $conn->prepare($deleteTrainingQuery);
+  $deleteTrainingStmt->bind_param('i', $trainingID);
+  $deleteTrainingSuccess = $deleteTrainingStmt->execute();
+
+  // Check if both deletions were successful
+  if ($deleteCollaboratorsSuccess && $deleteTrainingSuccess) {
+    // Commit the transaction
+    $conn->commit();
+    return [
+      'icon' => 'success',
+      'html' => 'Formação e collaboradores associados foram apagados com sucesso!',
+      'title' => 'Formação apagada',
+    ];
+  } else {
+    // Rollback the transaction if any deletion fails
+    $conn->rollback();
+    return [
+      'icon' => 'error',
+      'html' => 'Um erro inesperado ocorreu ao tentar apagar esta formação, contacte o departamento informático: informatica@amatoscar.pt.',
+      'title' => 'Erro de servidor',
+    ];
+  }
+
+  // Close the database connection
+  $conn->close();
 }

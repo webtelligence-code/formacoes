@@ -14,7 +14,7 @@ import { faGraduationCap } from '@fortawesome/free-solid-svg-icons'
 import moment from 'moment'
 import unorm from 'unorm'
 
-const RegisterTrainingPage = ({ sessionUsername, API_URL, setPage }) => {
+const RegisterTrainingPage = ({ sessionData, API_URL, setPage }) => {
   // Lists
   const [brandsList, setBrandsList] = useState([]);
   const [citiesList, setCitiesList] = useState([]);
@@ -193,11 +193,6 @@ const RegisterTrainingPage = ({ sessionUsername, API_URL, setPage }) => {
     message.error('Ação cancelada');
   }
 
-  useEffect(() => {
-    if (switchCollaboratorsChecked) setSelectedUsers(usersList.map(user => user.value))
-    else setSelectedUsers([])
-  }, [switchCollaboratorsChecked, usersList])
-
   // This function will submit the training form data to the API
   const submitTraining = async () => {
     setLoading(true);
@@ -225,22 +220,25 @@ const RegisterTrainingPage = ({ sessionUsername, API_URL, setPage }) => {
     const training = {
       dateCreated: formattedDatetime,
       dateUpdated: formattedDatetime,
-      dateLimit: formattedDatetimeLimit, // Convert the moment object to a string
+      dateLimit: switchDateCheked ? null : formattedDatetimeLimit, // Convert the moment object to a string
       title,
       brand,
       location,
       description,
       isFinished: 0,
+      isAll: switchCollaboratorsChecked ? 1 : 0,
       portal,
       image: null,
       filePath: null,
-      usernameCreated: sessionUsername,
-      usernameUpdated: sessionUsername,
+      usernameCreated: sessionData.USERNAME,
+      usernameUpdated: sessionData.USERNAME,
     }
 
     // Object for training collaborators
     const trainingCollaborators = {
-      collaborators: selectedUsers,
+      collaborators: switchCollaboratorsChecked ? usersList.flatMap(
+        user => user.options.map(option => option.value)
+      ) : selectedUsers,
       isAll: 0,
       certificateFilePath: null,
       certificateDate: null,
@@ -264,7 +262,7 @@ const RegisterTrainingPage = ({ sessionUsername, API_URL, setPage }) => {
         } else {
           setLoading(false);
           message.error('Ocurreu um erro inesperado!').then(() => {
-            
+
           });
         }
         console.log(chalk.green('Response from register training request:'), response.data)
