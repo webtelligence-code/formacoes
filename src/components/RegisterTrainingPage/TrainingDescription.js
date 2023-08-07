@@ -13,6 +13,8 @@ const TrainingDescription = ({ description, setDescription }) => {
     }
   }
 
+  console.log(description)
+
   // Calculate remaining characters
   const remainingCharacters = maxCharacters - description.length;
 

@@ -16,6 +16,7 @@ function App() {
   const [navbarButtonText, setNavbarButtonText] = useState('Registar');
   const [trainingID, setTrainingID] = useState(null);
   const [sessionData, setSessionData] = useState({});
+  const [edit, setEdit] = useState(false);
 
   /////////////////////////////////////////////////////////////////////////////////
   // REQUEST FUNCTIONS FOR REGISTER TRAINING PAGE
@@ -43,14 +44,19 @@ function App() {
   useEffect(() => {
     switch (page) {
       case 'List':
+        setTrainingID(null)
+        setEdit(false)
         setNavbarTitle('Formações');
         setNavbarButtonText('Registar');
         break;
       case 'Register':
-        setNavbarTitle('Registar formação');
+        if (!edit) {
+          setNavbarTitle('Registar formação');
+        } else setNavbarTitle('Editar formação');
         setNavbarButtonText('Voltar');
         break;
       case 'View':
+        setEdit(false)
         setNavbarTitle('Formação');
         setNavbarButtonText('Voltar');
         break;
@@ -58,18 +64,23 @@ function App() {
         console.log(chalk.red('You need to specify page type.'));
         break;
     }
-  }, [page]);
+  }, [edit, page]);
 
   /**
    * This function will handle the ID setState and then change to ViewTrainingPage.
    * @param {integer} id 
    */
-  const handleTrainingClick = (id) => {
-    setTrainingID(id); // Set the ID for th training that user clicked
+  const handleTrainingClick = (trainingID) => {
+    setTrainingID(trainingID); // Set the ID for th training that user clicked
     setPage('View'); // Set page to ViewTrainingPage
   }
 
-
+  const handleEditClick = (event, trainingID) => {
+    event.stopPropagation();
+    setTrainingID(trainingID); // Set the ID 
+    setEdit(true);
+    setPage('Register');
+  }
 
   return (
     <Container>
@@ -83,6 +94,7 @@ function App() {
           sessionData={sessionData}
           handleTrainingClick={handleTrainingClick}
           API_URL={API_URL}
+          handleEditClick={handleEditClick}
         />
       )}
       {page === 'Register' && (
@@ -90,6 +102,7 @@ function App() {
           sessionData={sessionData}
           API_URL={API_URL}
           setPage={setPage}
+          trainingID={trainingID}
         />
       )}
       {page === 'View' && (

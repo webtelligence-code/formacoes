@@ -11,11 +11,11 @@ import withReactContent from 'sweetalert2-react-content';
 
 const CustomTable = ({
   API_URL,
-  isModalOpen,
   trainingsList,
   handleTrainingClick,
   sessionData,
-  fetchTrainings
+  fetchTrainings,
+  handleEditClick
 }) => {
 
   // Initialize sweetalert2
@@ -25,12 +25,6 @@ const CustomTable = ({
   const userHasControl = (training) => {
     return sessionData.USERNAME === training.usernameCreated || sessionData.USERNAME === training.usernameUpdated;
   }
-
-  const handleTableRowClick = (trainingID) => {
-    if (!isModalOpen) { // Check if the modal is not open
-      handleTrainingClick(trainingID);
-    }
-  };
 
   /**
    * This function will handle the stopPropagation on the table row and then activate the modal
@@ -89,11 +83,11 @@ const CustomTable = ({
           confirmButtonColor: '#16B832',
           confirmButtonText: 'Ok',
         })
-        .then((result) => {
-          if(result.isConfirmed) {
-            fetchTrainings(); // Call Fetch all training function when user clicks on ok button
-          }
-        })
+          .then((result) => {
+            if (result.isConfirmed) {
+              fetchTrainings(); // Call Fetch all training function when user clicks on ok button
+            }
+          })
         console.log(chalk.green('Success on deleting training on the server'), response.data);
       })
       .catch((error) => {
@@ -120,7 +114,7 @@ const CustomTable = ({
       {/* Table body */}
       <tbody>
         {trainingsList.map((training, key) => (
-          <tr style={{ cursor: 'pointer' }} key={key} onClick={() => handleTableRowClick(training.ID)}>
+          <tr style={{ cursor: 'pointer' }} key={key} onClick={() => handleTrainingClick(training.ID)}>
             <td><Moment format='DD-MM-YYYY'>{training.dateCreated}</Moment></td>
             <td>{training.portal}</td>
             <td>{'teste'}</td>
@@ -138,7 +132,11 @@ const CustomTable = ({
             <td className='text-center'>
               {userHasControl(training) ? (
                 <Fragment>
-                  <Button shape='circle' className='me-2'>
+                  <Button
+                    shape='circle'
+                    className='me-2'
+                    onClick={(e) => handleEditClick(e, training.ID)}
+                  >
                     <FontAwesomeIcon icon={faEdit} />
                   </Button>
 

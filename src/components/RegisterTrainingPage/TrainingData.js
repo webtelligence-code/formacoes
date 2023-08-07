@@ -13,6 +13,7 @@ const TrainingData = ({
   title,
   setTitle,
   brandsList,
+  brand,
   setBrand,
   location,
   setLocation,
@@ -77,6 +78,7 @@ const TrainingData = ({
             name='brand'
             isClearable
             options={brandsList}
+            value={brand ? brand : null}
           />
         </a>
       </div>

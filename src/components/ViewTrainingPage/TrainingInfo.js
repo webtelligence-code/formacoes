@@ -5,7 +5,7 @@ const TrainingInfo = ({ training, collaborators}) => {
   return (
     <Card>
       <Card.Header
-        as={'h5'}
+        as={'h4'}
         style={{
           backgroundColor: 'transparent',
           color: '#ed6337'

@@ -5,10 +5,10 @@ import chalk from 'chalk';
 import { Alert } from 'antd';
 
 const ListTrainingPage = ({
-  isModalOpen,
   API_URL,
   handleTrainingClick,
-  sessionData
+  sessionData,
+  handleEditClick
 }) => {
   const [trainingsList, setTrainingsList] = useState([]);
 
@@ -44,11 +44,11 @@ const ListTrainingPage = ({
           trainingsList={trainingsList}
           handleTrainingClick={handleTrainingClick}
           fetchTrainings={fetchTrainings}
+          handleEditClick={handleEditClick}
         />
       ) : (
         <Alert message="Não tem nenhuma formação disponível" banner />
       )}
-
     </Fragment>
   )
 }

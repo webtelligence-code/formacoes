@@ -14,11 +14,13 @@ import { faGraduationCap } from '@fortawesome/free-solid-svg-icons'
 import moment from 'moment'
 import unorm from 'unorm'
 
-const RegisterTrainingPage = ({ sessionData, API_URL, setPage }) => {
+const RegisterTrainingPage = ({ sessionData, API_URL, setPage, trainingID }) => {
   // Lists
   const [brandsList, setBrandsList] = useState([]);
   const [citiesList, setCitiesList] = useState([]);
   const [usersList, setUsersList] = useState([]);
+
+  const [trainingData, setTrainingData] = useState();
 
   // Switches
   const [switchDateCheked, setSwitchDateChecked] = useState(false)
@@ -47,7 +49,6 @@ const RegisterTrainingPage = ({ sessionData, API_URL, setPage }) => {
         },
       })
       .then((response) => {
-        console.log(chalk.green('Fetched All Brands ->'), response.data);
         const brandsFromApi = response.data;
         const sortedBrands = brandsFromApi.sort((a, b) => a.localeCompare(b));
 
@@ -84,7 +85,6 @@ const RegisterTrainingPage = ({ sessionData, API_URL, setPage }) => {
         },
       })
       .then((response) => {
-        console.log(chalk.green('Fetched All Cities ->'), response.data);
         // Response data from API
         const citiesFromApi = response.data;
         const onlineAndLisboa = ['Online', 'Lisboa']; // External required options
@@ -134,7 +134,6 @@ const RegisterTrainingPage = ({ sessionData, API_URL, setPage }) => {
         },
       })
       .then((response) => {
-        console.log(chalk.green('Users fetched ->'), response.data);
         const usersFromApi = response.data;
 
         // Sort users based on name using the unorm library for normalization
@@ -171,23 +170,64 @@ const RegisterTrainingPage = ({ sessionData, API_URL, setPage }) => {
       });
   }, [API_URL]);
 
+  const fetchTraining = useCallback(() => {
+    axios.get(API_URL, {
+      params: {
+        action: 'get_training',
+        trainingID
+      }
+    })
+    .then((response) => {
+      console.log(chalk.green('Success on fetching required training from the server ->'), response.data)
+      setTrainingData(response.data);
+    })
+    .catch((error) => console.log(chalk.red('Failed to fetch required training from the server ->'), error));
+  }, [API_URL, trainingID])
+
   // useEffect controller to call API functions when component is loaded
   useEffect(() => {
-    // Fetch all brands when the component mounts
+    console.log(trainingID)
+    if (trainingID) {
+      fetchTraining();
+    }
+
     fetchAllBrands();
     fetchAllCities();
     fetchAllUsers();
-  }, [fetchAllBrands, fetchAllCities, fetchAllUsers]);
+  }, [fetchAllBrands, fetchAllCities, fetchAllUsers, fetchTraining, trainingID]);
+
+  // Function to set states for edit purposes
+  const populateTrainingFields = useCallback(() => {
+    if (trainingData) {
+      setTitle(trainingData.title || "");
+      setBrand(
+        trainingData.brand
+          ? { value: trainingData.brand, label: trainingData.brand }
+          : null
+      );
+      setLocation(trainingData.location || null);
+      setSelectedDate(trainingData.dateLimit || null);
+      setSelectedUsers(trainingData.collaborators || []);
+      setDescription(trainingData.description || "");
+    }
+  }, [trainingData, setTitle, setBrand, setLocation, setSelectedDate, setSelectedUsers, setDescription]);  
+
+  // Use effect to set training data in the required fields
+  useEffect(() => {
+    if (trainingData) populateTrainingFields();
+  }, [populateTrainingFields, trainingData])
 
   /////////////////////////////////////////////////////////////////////////////////
   // INTERACT FUNCTIONS FOR REGISTER TRAINING PAGE
   ////////////////////////////////////////////////////////////////////////////////
 
+  // Popup confirm callback function
   const confirm = (e) => {
     console.log(chalk.cyan(e));
     submitTraining();
   }
 
+  // Popup cancel callback function
   const cancel = (e) => {
     console.log(chalk.cyan(e));
     message.error('Ação cancelada');
@@ -204,6 +244,7 @@ const RegisterTrainingPage = ({ sessionData, API_URL, setPage }) => {
       millisecond: 0,
     });
 
+    // Format date and time to send to the API
     const formattedDatetimeLimit = datetimeLimit.format('YYYY-MM-DD HH:mm:ss');
 
     // Set portal based
@@ -285,6 +326,7 @@ const RegisterTrainingPage = ({ sessionData, API_URL, setPage }) => {
             title={title}
             setTitle={setTitle}
             brandsList={brandsList}
+            brand={brand}
             setBrand={setBrand}
             location={location}
             setLocation={setLocation}
