@@ -63,3 +63,9 @@ CREATE TABLE t_training_collaborators (
   finishedDate DATETIME NULL,
   FOREIGN KEY (trainingID) REFERENCES t_trainings (ID)
 );
+
+CREATE TABLE t_platforms (
+  ID INT(11) PRIMARY KEY NOT NULL AUTO_INCREMENT,
+  name VARCHAR(100) NOT NULL, 
+  
+)

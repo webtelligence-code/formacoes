@@ -2,7 +2,7 @@ import React from 'react'
 import { Navbar } from 'react-bootstrap'
 import Filters from '../ListTrainingPage/Filters'
 
-const TopNav = ({ title, showFilters, buttonText, setPage }) => {
+const TopNav = ({ title, showFilters, trainingVideo, setTrainingVideo, buttonText, setPage }) => {
   return (
     <Navbar sticky='top'>
       {/* Page label */}
@@ -12,7 +12,7 @@ const TopNav = ({ title, showFilters, buttonText, setPage }) => {
 
       {/* Filters Row (Register/goBack -> button) | (portal filter -> select) | (platform fiter -> select) | (isFinished filter -> select) | (clear filters -> button) */}
       <div style={{ width: '100%' }}>
-        <Filters setPage={setPage} showFilters={showFilters} buttonText={buttonText} />
+        <Filters setPage={setPage} showFilters={showFilters} trainingVideo={trainingVideo} setTrainingVideo={setTrainingVideo} buttonText={buttonText} />
       </div>
     </Navbar>
   )

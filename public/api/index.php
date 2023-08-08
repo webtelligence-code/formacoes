@@ -24,7 +24,8 @@ switch ($method) {
                 $response = getAllCities();
                 break;
             case 'get_all_users':
-                $response = getAllUsers();
+                $username = $_GET['username'];
+                $response = getAllUsers($username);
                 break;
             case 'get_all_trainings':
                 $response = getAllTrainings();

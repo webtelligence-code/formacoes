@@ -13,8 +13,14 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faGraduationCap } from '@fortawesome/free-solid-svg-icons'
 import moment from 'moment'
 import unorm from 'unorm'
+import TopNav from '../components/utility/TopNav';
 
-const RegisterTrainingPage = ({ sessionData, API_URL, setPage, trainingID }) => {
+const RegisterTrainingPage = ({ 
+  sessionData, 
+  API_URL,  
+  trainingID,
+  setPage,
+}) => {
   // Lists
   const [brandsList, setBrandsList] = useState([]);
   const [citiesList, setCitiesList] = useState([]);
@@ -131,6 +137,7 @@ const RegisterTrainingPage = ({ sessionData, API_URL, setPage, trainingID }) => 
       .get(API_URL, {
         params: {
           action: 'get_all_users',
+          username: sessionData.USERNAME
         },
       })
       .then((response) => {
@@ -168,7 +175,7 @@ const RegisterTrainingPage = ({ sessionData, API_URL, setPage, trainingID }) => 
       .catch((error) => {
         console.log(chalk.red('Error fetching users ->'), error);
       });
-  }, [API_URL]);
+  }, [API_URL, sessionData.USERNAME]);
 
   const fetchTraining = useCallback(() => {
     axios.get(API_URL, {
@@ -177,11 +184,11 @@ const RegisterTrainingPage = ({ sessionData, API_URL, setPage, trainingID }) => 
         trainingID
       }
     })
-    .then((response) => {
-      console.log(chalk.green('Success on fetching required training from the server ->'), response.data)
-      setTrainingData(response.data);
-    })
-    .catch((error) => console.log(chalk.red('Failed to fetch required training from the server ->'), error));
+      .then((response) => {
+        console.log(chalk.green('Success on fetching required training from the server ->'), response.data)
+        setTrainingData(response.data);
+      })
+      .catch((error) => console.log(chalk.red('Failed to fetch required training from the server ->'), error));
   }, [API_URL, trainingID])
 
   // useEffect controller to call API functions when component is loaded
@@ -210,7 +217,7 @@ const RegisterTrainingPage = ({ sessionData, API_URL, setPage, trainingID }) => 
       setSelectedUsers(trainingData.collaborators || []);
       setDescription(trainingData.description || "");
     }
-  }, [trainingData, setTitle, setBrand, setLocation, setSelectedDate, setSelectedUsers, setDescription]);  
+  }, [trainingData, setTitle, setBrand, setLocation, setSelectedDate, setSelectedUsers, setDescription]);
 
   // Use effect to set training data in the required fields
   useEffect(() => {
@@ -235,17 +242,22 @@ const RegisterTrainingPage = ({ sessionData, API_URL, setPage, trainingID }) => 
 
   // This function will submit the training form data to the API
   const submitTraining = async () => {
+    console.log(chalk.blue('Selected Date ->'), selectedDate)
+    console.log(chalk.blue('Selected Time ->'), selectedTime)
     setLoading(true);
     // Convert selectedDate and selectedTime to datetime format using moment library
-    const datetimeLimit = moment(selectedDate).set({
+    const datetimeLimit = moment({
+      year: selectedDate?.year(),
+      month: selectedDate?.month(),
+      day: selectedDate?.date(),
       hour: selectedTime?.hour(),
       minute: selectedTime?.minute(),
-      second: 0,
-      millisecond: 0,
     });
+    console.log(chalk.blue('Datetime limit (not formatted) ->'), datetimeLimit);
 
     // Format date and time to send to the API
     const formattedDatetimeLimit = datetimeLimit.format('YYYY-MM-DD HH:mm:ss');
+    console.log(chalk.blue('Datetime limit formatted ->'), formattedDatetimeLimit);
 
     // Set portal based
     const portal = !brand ? 'A MatosCar' : 'Marca';
@@ -265,9 +277,10 @@ const RegisterTrainingPage = ({ sessionData, API_URL, setPage, trainingID }) => 
       title,
       brand,
       location,
+      link: null,
       description,
-      isFinished: 0,
       isAll: switchCollaboratorsChecked ? 1 : 0,
+      isVideo: 1,
       portal,
       image: null,
       filePath: null,
@@ -277,10 +290,9 @@ const RegisterTrainingPage = ({ sessionData, API_URL, setPage, trainingID }) => 
 
     // Object for training collaborators
     const trainingCollaborators = {
-      collaborators: switchCollaboratorsChecked ? usersList.flatMap(
-        user => user.options.map(option => option.value)
-      ) : selectedUsers,
-      isAll: 0,
+      collaborators: switchCollaboratorsChecked 
+      ? [...usersList.flatMap(user => user.options.map(option => option.value)), sessionData.USERNAME]
+      : [...selectedUsers, sessionData.USERNAME],
       certificateFilePath: null,
       certificateDate: null,
       dateOpened: null,
@@ -316,6 +328,7 @@ const RegisterTrainingPage = ({ sessionData, API_URL, setPage, trainingID }) => 
 
   return (
     <Fragment>
+      <TopNav title={'Registar nova formação'} showFilters={false} trainingVideo={false} setPage={setPage} buttonText={'Voltar'} />
       <Row>
         {/* Left side form (Training Data) */}
         <Col>

@@ -4,7 +4,6 @@ import ListTrainingPage from './pages/ListTrainingPage';
 import RegisterTrainingPage from './pages/RegisterTrainingPage';
 import ViewTrainingPage from './pages/ViewTrainingPage';
 import { useCallback, useEffect, useState } from 'react';
-import TopNav from './components/utility/TopNav';
 import chalk from 'chalk';
 import axios from 'axios';
 
@@ -12,8 +11,6 @@ const API_URL = 'https://amatoscar.pt/GAP/NovasPlataformas/formacoes/api/index.p
 
 function App() {
   const [page, setPage] = useState('List')
-  const [navbarTitle, setNavbarTitle] = useState('Formações');
-  const [navbarButtonText, setNavbarButtonText] = useState('Registar');
   const [trainingID, setTrainingID] = useState(null);
   const [sessionData, setSessionData] = useState({});
   const [edit, setEdit] = useState(false);
@@ -46,19 +43,12 @@ function App() {
       case 'List':
         setTrainingID(null)
         setEdit(false)
-        setNavbarTitle('Formações');
-        setNavbarButtonText('Registar');
         break;
       case 'Register':
-        if (!edit) {
-          setNavbarTitle('Registar formação');
-        } else setNavbarTitle('Editar formação');
-        setNavbarButtonText('Voltar');
+
         break;
       case 'View':
         setEdit(false)
-        setNavbarTitle('Formação');
-        setNavbarButtonText('Voltar');
         break;
       default:
         console.log(chalk.red('You need to specify page type.'));
@@ -84,15 +74,12 @@ function App() {
 
   return (
     <Container>
-
-      {/* Navbar with custom options */}
-      <TopNav title={navbarTitle} showFilters={page === 'List'} setPage={setPage} buttonText={navbarButtonText} />
-
       {/* Pages */}
       {(page === 'List') && (
         <ListTrainingPage
           sessionData={sessionData}
           handleTrainingClick={handleTrainingClick}
+          setPage={setPage}
           API_URL={API_URL}
           handleEditClick={handleEditClick}
         />
@@ -109,7 +96,7 @@ function App() {
         <ViewTrainingPage
           trainingID={trainingID}
           API_URL={API_URL}
-          setNavbarTitle={setNavbarTitle}
+          setPage={setPage}
         />
       )}
     </Container>

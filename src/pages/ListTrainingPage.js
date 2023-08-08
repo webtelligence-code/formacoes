@@ -3,16 +3,18 @@ import CustomTable from '../components/ListTrainingPage/CustomTable';
 import axios from 'axios';
 import chalk from 'chalk';
 import { Alert } from 'antd';
+import TopNav from '../components/utility/TopNav';
 
 const ListTrainingPage = ({
   API_URL,
   handleTrainingClick,
   sessionData,
-  handleEditClick
+  handleEditClick,
+  setPage,
 }) => {
   const [trainingsList, setTrainingsList] = useState([]);
 
-  const actionType = sessionData.DEPARTAMENTO === 'Informático' ? 'get_all_trainings' : 'get_my_trainings';
+  const actionType = 'get_my_trainings';
 
   const fetchTrainings = useCallback(() => {
     axios.get(API_URL, {
@@ -37,6 +39,8 @@ const ListTrainingPage = ({
 
   return (
     <Fragment>
+
+      <TopNav title={'Formações'} showFilters={true} trainingVideo={false} setPage={setPage} buttonText={'Registar'} />
       {trainingsList.length > 0 ? (
         <CustomTable
           API_URL={API_URL}

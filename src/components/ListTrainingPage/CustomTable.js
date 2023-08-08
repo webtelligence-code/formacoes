@@ -127,7 +127,7 @@ const CustomTable = ({
             ) : 'Sem Limite'}
             </td>
             <td className='text-center'>
-              <FontAwesomeIcon icon={training.isFinished === 1 ? faCheck : faX} color={training.isFinished === 1 ? 'green' : 'red'} />
+              <FontAwesomeIcon icon={training.fnishedDate ? faCheck : faX} color={training.fnishedDate ? 'green' : 'red'} />
             </td>
             <td className='text-center'>
               {userHasControl(training) ? (

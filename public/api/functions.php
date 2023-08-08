@@ -98,10 +98,10 @@ function getAllCities()
 }
 
 // Function that will fetch all users (guests) from the database
-function getAllUsers()
+function getAllUsers($username)
 {
   global $conn;
-  $sql = 'SELECT username, nameDisplay FROM tbusers WHERE ativo = 1 AND colaborador = 1 ORDER BY nameDisplay';
+  $sql = "SELECT username, nameDisplay FROM tbusers WHERE ativo = 1 AND colaborador = 1 AND username != '$username' ORDER BY nameDisplay";
   $result = $conn->query($sql);
 
   $users = array();
@@ -143,14 +143,12 @@ function getMyTrainings($username)
   global $conn;
 
   // SQL query to fetch all trainings
-  $sql = "SELECT t.*
-          FROM t_trainings t
-          LEFT JOIN t_training_collaborators tc ON t.ID = tc.trainingID
-          WHERE t.usernameCreated = '$username'
-            OR t.usernameUpdated = '$username'
-            OR tc.username = '$username'
-          GROUP BY t.ID
-          ORDER BY t.dateCreated DESC";
+  $sql = "SELECT t.*, tc.trainingID, tc.username, tc.certificateFilePath, tc.certificateDate, tc.dateOpened, tc.finishedDate
+        FROM t_trainings t
+        LEFT JOIN t_training_collaborators tc ON t.ID = tc.trainingID
+        WHERE tc.username = '$username'
+        GROUP BY t.ID, tc.trainingID
+        ORDER BY t.dateCreated DESC";
 
   $result = $conn->query($sql);
 
@@ -167,7 +165,8 @@ function getMyTrainings($username)
   return $trainings;
 }
 
-function getTraining($trainingID) {
+function getTraining($trainingID)
+{
   global $conn;
 
   // Fetch training from the t_trainings table
@@ -182,7 +181,7 @@ function getTraining($trainingID) {
     $collaboratorsResult = $conn->query($collaboratorsSql);
 
     $collaborators = array();
-    if($collaboratorsResult && $collaboratorsResult->num_rows > 0) {
+    if ($collaboratorsResult && $collaboratorsResult->num_rows > 0) {
       while ($collaborator = $collaboratorsResult->fetch_assoc()) {
         $collaborators[] = $collaborator['username'];
       }
@@ -209,19 +208,21 @@ function insertTrainingData($training, $trainingCollaborators)
     $conn->begin_transaction();
 
     // Insert the training data into t_trainings
-    $insertTrainingQuery = "INSERT INTO t_trainings (dateCreated, dateUpdated, dateLimit, title, brand, location, description, isFinished, portal, image, filePath, usernameCreated, usernameUpdated)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    $insertTrainingQuery = "INSERT INTO t_trainings (dateCreated, dateUpdated, isAll, isVideo, dateLimit, title, brand, location, link, description, portal, image, filePath, usernameCreated, usernameUpdated)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
     $stmtTraining = $conn->prepare($insertTrainingQuery);
     $stmtTraining->bind_param(
-      "sssssssisssss",
+      "ssiisssssssssss",
       $training['dateCreated'],
       $training['dateUpdated'],
+      $training['isAll'],
+      $training['isVideo'],
       $training['dateLimit'],
       $training['title'],
       $training['brand'],
       $training['location'],
+      $training['link'],
       $training['description'],
-      $training['isFinished'],
       $training['portal'],
       $training['image'],
       $training['filePath'],
@@ -236,16 +237,15 @@ function insertTrainingData($training, $trainingCollaborators)
 
     // Insert the training collaborators data into t_training_collaborators
     if (isset($trainingCollaborators['collaborators']) && is_array($trainingCollaborators['collaborators'])) {
-      $insertCollaboratorsQuery = "INSERT INTO t_training_collaborators (trainingID, username, isAll, certificateFilePath, certificateDate, dateOpened, finishedDate)
-            VALUES (?, ?, ?, ?, ?, ?, ?)";
+      $insertCollaboratorsQuery = "INSERT INTO t_training_collaborators (trainingID, username, certificateFilePath, certificateDate, dateOpened, finishedDate)
+            VALUES (?, ?, ?, ?, ?, ?)";
       $stmtCollaborators = $conn->prepare($insertCollaboratorsQuery);
 
       foreach ($trainingCollaborators['collaborators'] as $collaborator) {
         $stmtCollaborators->bind_param(
-          "isissss",
+          "isssss",
           $trainingID,
           $collaborator,
-          $trainingCollaborators['isAll'],
           $trainingCollaborators['certificateFilePath'],
           $trainingCollaborators['certificateDate'],
           $trainingCollaborators['dateOpened'],
@@ -270,7 +270,8 @@ function insertTrainingData($training, $trainingCollaborators)
   }
 }
 
-function deleteTraining($trainingID) {
+function deleteTraining($trainingID)
+{
   global $conn;
 
   // Start a transsaction to ensure that both deletions are successfull or none

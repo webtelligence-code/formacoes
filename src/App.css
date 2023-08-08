@@ -3,3 +3,18 @@
   border: none;
   color: white;
 }
+
+.equal-height-row {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.equal-height-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.card-hover:hover {
+  font-size: 35px;
+}

@@ -6,11 +6,11 @@ import React, { Fragment } from 'react'
 import { Col, Row } from 'react-bootstrap'
 import Select from 'react-select'
 
-const Filters = ({ setPage, buttonText, showFilters }) => (
+const Filters = ({ setPage, buttonText, trainingVideo, setTrainingVideo, showFilters }) => (
   <Row className={`${showFilters ? 'text-center justify-content-center' : 'text-start'}`}>
     <Col>
       <Button
-        onClick={() => setPage(showFilters ? 'Register' : 'List')}
+        onClick={() => trainingVideo ? setTrainingVideo(false) : setPage(showFilters ? 'Register' : 'List')}
         icon={<FontAwesomeIcon icon={showFilters ? faPlus : faAngleLeft} />}
         className='h-100'
         danger={!showFilters}
