@@ -11,6 +11,7 @@
 # production
 /build
 
+# media/pdf
 /public/videos
 /public/pdf
 
