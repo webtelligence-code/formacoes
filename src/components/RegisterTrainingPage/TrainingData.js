@@ -1,12 +1,12 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import { faCar, faMapLocationDot } from '@fortawesome/free-solid-svg-icons';
+import { faCar, faMapLocationDot, faShapes } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Switch, DatePicker, TimePicker, Input } from 'antd';
+import { DatePicker, Input, Switch, TimePicker } from 'antd';
 import chalk from 'chalk';
-import React, { Fragment } from 'react'
-import { Row, Col } from 'react-bootstrap'
-import Select from 'react-select'
-import { Tooltip } from 'react-tooltip'
+import React, { Fragment } from 'react';
+import { Col, Row } from 'react-bootstrap';
+import Select from 'react-select';
+import { Tooltip } from 'react-tooltip';
 
 const TrainingData = ({
   API_URL,
@@ -15,6 +15,9 @@ const TrainingData = ({
   brandsList,
   brand,
   setBrand,
+  platform,
+  setPlatform,
+  platformsList,
   location,
   setLocation,
   citiesList,
@@ -65,23 +68,55 @@ const TrainingData = ({
       </div>
 
       {/* Brand */}
-      <div style={{ display: 'flex', flexDirection: 'column', marginBottom: 10 }}>
-        <label style={{ fontWeight: '700' }}>Marca</label>
+      {!platform && (
+        <div style={{ display: 'flex', flexDirection: 'column', marginBottom: 10 }}>
+          <label style={{ fontWeight: '700' }}>Marca</label>
 
-        {/* Wrapped Tooltip */}
-        <a data-tooltip-id='brand-tooltip' data-tooltip-content='O título deve ter pelo menos 5 caracteres'>
-          <Select
-            className='brand-tooltip'
-            isDisabled={title.length < 5}
-            onChange={(option) => setBrand(option.value)}
-            placeholder={<label>Selecione a marca<FontAwesomeIcon icon={faCar} className='ms-2' /></label>}
-            name='brand'
-            isClearable
-            options={brandsList}
-            value={brand ? brand : null}
-          />
-        </a>
-      </div>
+          {/* Wrapped Tooltip */}
+          <a data-tooltip-id='brand-tooltip' data-tooltip-content='O título deve ter pelo menos 5 caracteres'>
+            <Select
+              className='brand-tooltip'
+              isDisabled={title.length < 5}
+              onChange={(option) => {
+                if (option && option.value) {
+                  setBrand(option.value);
+                } else {
+                  setBrand(null); // Clear the selected brand if option is null or undefined
+                }
+              }}
+              placeholder={<label>Selecione a marca<FontAwesomeIcon icon={faCar} className='ms-2' /></label>}
+              name='brand'
+              isClearable
+              options={brandsList}
+            />
+          </a>
+        </div>
+      )}
+
+      {!brand && (
+        <div style={{ display: 'flex', flexDirection: 'column', marginBottom: 10 }}>
+          <label style={{ fontWeight: '700' }}>Plataforma</label>
+
+          {/* Wrapped Tooltip */}
+          <a data-tooltip-id='platform-tooltip' data-tooltip-content='O título deve ter pelo menos 5 caracteres'>
+            <Select
+              className='platform-tooltip'
+              isDisabled={title.length < 5}
+              onChange={(option) => {
+                if (option && option.value) {
+                  setPlatform(option.value);
+                } else {
+                  setPlatform(null); // Clear the selected brand if option is null or undefined
+                }
+              }}
+              placeholder={<label>Selecione a plataforma<FontAwesomeIcon icon={faShapes} className='ms-2' /></label>}
+              name='platform'
+              isClearable
+              options={platformsList}
+            />
+          </a>
+        </div>
+      )}
 
       {/* Location */}
       <div style={{ display: 'flex', flexDirection: 'column', marginBottom: 10 }}>

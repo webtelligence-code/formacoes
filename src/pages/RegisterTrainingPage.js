@@ -14,6 +14,7 @@ import { faGraduationCap } from '@fortawesome/free-solid-svg-icons'
 import moment from 'moment'
 import unorm from 'unorm'
 import TopNav from '../components/utility/TopNav';
+import TrainingFile from '../components/RegisterTrainingPage/TrainingFile';
 
 const RegisterTrainingPage = ({ 
   sessionData, 
@@ -23,6 +24,7 @@ const RegisterTrainingPage = ({
 }) => {
   // Lists
   const [brandsList, setBrandsList] = useState([]);
+  const [platformsList, setPlatformsList] = useState([]);
   const [citiesList, setCitiesList] = useState([]);
   const [usersList, setUsersList] = useState([]);
 
@@ -35,11 +37,13 @@ const RegisterTrainingPage = ({
   // Selected States
   const [title, setTitle] = useState('');
   const [brand, setBrand] = useState(null);
+  const [platform, setPlatform] = useState(null);
   const [location, setLocation] = useState(null);
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState(null);
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [description, setDescription] = useState('');
+  const [trainingFile, setTrainingFile] = useState(null);
 
   // Loading State
   const [loading, setLoading] = useState(false)
@@ -82,6 +86,24 @@ const RegisterTrainingPage = ({
         console.log(chalk.red('Failed fetching all Brands...'), error);
       });
   }, [API_URL]);
+
+  const fetchAllPlatforms = useCallback(() => {
+    axios.get(API_URL, {
+      params: {
+        action: 'get_all_platforms',
+      }
+    })
+    .then((response) => {
+      console.log(chalk.green('Success on fetching all platforms ->'), response.data)
+
+      const formattedOptions = response.data.map(platform => ({
+        value: platform,
+        label: platform
+      }))
+      setPlatformsList(formattedOptions);
+    })
+    .catch((error) => console.log(chalk.red('Failed to fetch all platforms'), error))
+  }, [API_URL])
 
   const fetchAllCities = useCallback(() => {
     axios
@@ -193,15 +215,14 @@ const RegisterTrainingPage = ({
 
   // useEffect controller to call API functions when component is loaded
   useEffect(() => {
-    console.log(trainingID)
     if (trainingID) {
       fetchTraining();
     }
-
     fetchAllBrands();
+    fetchAllPlatforms();
     fetchAllCities();
     fetchAllUsers();
-  }, [fetchAllBrands, fetchAllCities, fetchAllUsers, fetchTraining, trainingID]);
+  }, [fetchAllBrands, fetchAllCities, fetchAllPlatforms, fetchAllUsers, fetchTraining, trainingID]);
 
   // Function to set states for edit purposes
   const populateTrainingFields = useCallback(() => {
@@ -262,6 +283,9 @@ const RegisterTrainingPage = ({
     // Set portal based
     const portal = !brand ? 'A MatosCar' : 'Marca';
 
+    // Set platform based
+    const updatedPlatform = !brand ? platform : brand;
+
     // Current datetime
     const currentDatetime = moment().toISOString();
     const formattedDatetime = moment(currentDatetime).format('YYYY-MM-DD HH:mm:ss');
@@ -276,6 +300,7 @@ const RegisterTrainingPage = ({
       dateLimit: switchDateCheked ? null : formattedDatetimeLimit, // Convert the moment object to a string
       title,
       brand,
+      platform: updatedPlatform,
       location,
       link: null,
       description,
@@ -283,7 +308,7 @@ const RegisterTrainingPage = ({
       isVideo: 1,
       portal,
       image: null,
-      filePath: null,
+      filePath: `GAP/NovasPlataformas/formacoes/videos/${trainingFile.name}`,
       usernameCreated: sessionData.USERNAME,
       usernameUpdated: sessionData.USERNAME,
     }
@@ -341,6 +366,9 @@ const RegisterTrainingPage = ({
             brandsList={brandsList}
             brand={brand}
             setBrand={setBrand}
+            platform={platform}
+            setPlatform={setPlatform}
+            platformsList={platformsList}
             location={location}
             setLocation={setLocation}
             citiesList={citiesList}

@@ -71,6 +71,27 @@ function getAllBrands()
   return $brands;
 }
 
+function getAllPlatforms()
+{
+  global $conn;
+
+  $sql = "SELECT * FROM t_platforms ORDER BY name";
+
+  $result = $conn->query($sql);
+
+  $platforms = array();
+
+  if ($result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+      $platforms[] = $row['name'];
+    }
+  }
+
+  $conn->close();
+
+  return $platforms;
+}
+
 // Function that will fetch all cities available in the company database
 function getAllCities()
 {

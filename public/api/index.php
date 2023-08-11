@@ -20,6 +20,9 @@ switch ($method) {
             case 'get_all_brands':
                 $response = getAllBrands();
                 break;
+            case 'get_all_platforms':
+                $response = getAllPlatforms();
+                break;
             case 'get_all_cities':
                 $response = getAllCities();
                 break;
